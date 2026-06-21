@@ -1,0 +1,155 @@
+﻿--- EPISODE 0 ---
+[ZONE] Ego entered MERGE_ZONE
+Step  20 | Speed: 0.56 | Dist: 14.74 | TermReason: None
+Step  40 | Speed: 0.00 | Dist: 14.56 | TermReason: None
+Step  60 | Speed: 0.13 | Dist: 14.49 | TermReason: None
+Step  80 | Speed: 0.00 | Dist: 14.44 | TermReason: None
+Step 100 | Speed: 0.00 | Dist: 14.32 | TermReason: None
+Step 120 | Speed: 0.10 | Dist: 14.15 | TermReason: None
+Step 140 | Speed: 0.34 | Dist: 14.01 | TermReason: None
+Step 160 | Speed: 0.00 | Dist: 13.90 | TermReason: None
+Step 180 | Speed: 0.05 | Dist: 13.71 | TermReason: None
+[FIXED_ENV] EPISODE END OUTCOME: TIMEOUT
+
+=========================================
+       EPISODE 200 REWARD BREAKDOWN
+       Outcome: TIMEOUT
+=========================================
+  Progress Reward:      +0.1384
+  Jerk Penalty:         -12.2493
+  Timeout Penalty:      -300.0000
+  Success Reward:       +0.0000
+  Collision Penalty:    +0.0000
+-----------------------------------------
+  Total Episode Reward: -437.9342
+-----------------------------------------
+  Time in APPROACH_ZONE:0.00 s
+  Time in MERGE_ZONE:   20.00 s
+  Reached MERGE_ZONE:   YES
+=========================================
+
+Step 200 | Speed: 0.07 | Dist: 13.62 | TermReason: timeout
+--- EPISODE 1 ---
+[ZONE] Ego entered MERGE_ZONE
+Step  20 | Speed: 0.00 | Dist: 14.85 | TermReason: None
+Step  40 | Speed: 0.14 | Dist: 14.70 | TermReason: None
+Step  60 | Speed: 0.19 | Dist: 14.61 | TermReason: None
+Step  80 | Speed: 0.08 | Dist: 14.55 | TermReason: None
+Step 100 | Speed: 0.09 | Dist: 14.45 | TermReason: None
+Step 120 | Speed: 0.12 | Dist: 14.21 | TermReason: None
+Step 140 | Speed: 0.00 | Dist: 14.08 | TermReason: None
+Step 160 | Speed: 0.00 | Dist: 13.91 | TermReason: None
+Step 180 | Speed: 0.00 | Dist: 13.79 | TermReason: None
+[FIXED_ENV] EPISODE END OUTCOME: TIMEOUT
+
+=========================================
+       EPISODE 200 REWARD BREAKDOWN
+       Outcome: TIMEOUT
+=========================================
+  Progress Reward:      +0.1257
+  Jerk Penalty:         -13.1584
+  Timeout Penalty:      -300.0000
+  Success Reward:       +0.0000
+  Collision Penalty:    +0.0000
+-----------------------------------------
+  Total Episode Reward: -439.0336
+-----------------------------------------
+  Time in APPROACH_ZONE:0.00 s
+  Time in MERGE_ZONE:   20.00 s
+  Reached MERGE_ZONE:   YES
+=========================================
+
+Step 200 | Speed: 0.00 | Dist: 13.74 | TermReason: timeout
+--- EPISODE 2 ---
+[ZONE] Ego entered MERGE_ZONE
+Step  20 | Speed: 0.00 | Dist: 14.76 | TermReason: None
+Step  40 | Speed: 0.03 | Dist: 14.33 | TermReason: None
+Step  60 | Speed: 0.23 | Dist: 14.13 | TermReason: None
+Step  80 | Speed: 0.00 | Dist: 13.94 | TermReason: None
+Step 100 | Speed: 0.00 | Dist: 13.80 | TermReason: None
+Step 120 | Speed: 0.00 | Dist: 13.72 | TermReason: None
+Step 140 | Speed: 0.00 | Dist: 13.55 | TermReason: None
+Step 160 | Speed: 0.00 | Dist: 13.45 | TermReason: None
+Step 180 | Speed: 0.21 | Dist: 13.37 | TermReason: None
+[FIXED_ENV] EPISODE END OUTCOME: TIMEOUT
+
+=========================================
+       EPISODE 200 REWARD BREAKDOWN
+       Outcome: TIMEOUT
+=========================================
+  Progress Reward:      +0.2100
+  Jerk Penalty:         -11.0551
+  Timeout Penalty:      -300.0000
+  Success Reward:       +0.0000
+  Collision Penalty:    +0.0000
+-----------------------------------------
+  Total Episode Reward: -432.7385
+-----------------------------------------
+  Time in APPROACH_ZONE:0.00 s
+  Time in MERGE_ZONE:   20.00 s
+  Reached MERGE_ZONE:   YES
+=========================================
+
+Step 200 | Speed: 0.00 | Dist: 12.90 | TermReason: timeout
+--- EPISODE 3 ---
+[ZONE] Ego entered MERGE_ZONE
+Step  20 | Speed: 0.00 | Dist: 14.95 | TermReason: None
+Step  40 | Speed: 0.00 | Dist: 14.81 | TermReason: None
+Step  60 | Speed: 0.00 | Dist: 14.68 | TermReason: None
+Step  80 | Speed: 0.09 | Dist: 14.54 | TermReason: None
+Step 100 | Speed: 0.00 | Dist: 14.41 | TermReason: None
+Step 120 | Speed: 0.05 | Dist: 14.29 | TermReason: None
+Step 140 | Speed: 0.08 | Dist: 14.15 | TermReason: None
+Step 160 | Speed: 0.00 | Dist: 13.83 | TermReason: None
+Step 180 | Speed: 0.31 | Dist: 13.69 | TermReason: None
+[FIXED_ENV] EPISODE END OUTCOME: TIMEOUT
+
+=========================================
+       EPISODE 200 REWARD BREAKDOWN
+       Outcome: TIMEOUT
+=========================================
+  Progress Reward:      +0.1326
+  Jerk Penalty:         -10.8005
+  Timeout Penalty:      -300.0000
+  Success Reward:       +0.0000
+  Collision Penalty:    +0.0000
+-----------------------------------------
+  Total Episode Reward: -436.9647
+-----------------------------------------
+  Time in APPROACH_ZONE:0.00 s
+  Time in MERGE_ZONE:   20.00 s
+  Reached MERGE_ZONE:   YES
+=========================================
+
+Step 200 | Speed: 0.00 | Dist: 13.67 | TermReason: timeout
+--- EPISODE 4 ---
+[ZONE] Ego entered MERGE_ZONE
+Step  20 | Speed: 0.00 | Dist: 14.83 | TermReason: None
+Step  40 | Speed: 0.15 | Dist: 14.60 | TermReason: None
+Step  60 | Speed: 0.00 | Dist: 14.51 | TermReason: None
+Step  80 | Speed: 0.06 | Dist: 14.32 | TermReason: None
+Step 100 | Speed: 0.00 | Dist: 14.23 | TermReason: None
+Step 120 | Speed: 0.00 | Dist: 14.07 | TermReason: None
+Step 140 | Speed: 0.00 | Dist: 14.01 | TermReason: None
+Step 160 | Speed: 0.00 | Dist: 14.00 | TermReason: None
+Step 180 | Speed: 0.00 | Dist: 13.85 | TermReason: None
+[FIXED_ENV] EPISODE END OUTCOME: TIMEOUT
+
+=========================================
+       EPISODE 200 REWARD BREAKDOWN
+       Outcome: TIMEOUT
+=========================================
+  Progress Reward:      +0.1208
+  Jerk Penalty:         -9.7446
+  Timeout Penalty:      -300.0000
+  Success Reward:       +0.0000
+  Collision Penalty:    +0.0000
+-----------------------------------------
+  Total Episode Reward: -435.8925
+-----------------------------------------
+  Time in APPROACH_ZONE:0.00 s
+  Time in MERGE_ZONE:   20.00 s
+  Reached MERGE_ZONE:   YES
+=========================================
+
+Step 200 | Speed: 0.03 | Dist: 13.79 | TermReason: timeout

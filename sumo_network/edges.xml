@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
+    <!-- Circular Ring (1 lane, speed 11.11 m/s = 40 km/h) -->
+    <!-- Curved shape points are calculated at 45 degree angles (20 * cos(45) = 14.14) -->
+    <edge id="circ_S_E" from="S" to="E" numLanes="1" speed="11.11" shape="0,-20 14.14,-14.14 20,0"/>
+    <edge id="circ_E_N" from="E" to="N" numLanes="1" speed="11.11" shape="20,0 14.14,14.14 0,20"/>
+    <edge id="circ_N_W" from="N" to="W" numLanes="1" speed="11.11" shape="0,20 -14.14,14.14 -20,0"/>
+    <edge id="circ_W_S" from="W" to="S" numLanes="1" speed="11.11" shape="-20,0 -14.14,-14.14 0,-20"/>
+
+    <!-- South Access Arm (1 entry, 1 exit, speed 13.89 m/s = 50 km/h) -->
+    <edge id="entry_S" from="S_far" to="S" numLanes="1" speed="13.89"/>
+    <edge id="exit_S" from="S" to="S_far" numLanes="1" speed="13.89"/>
+
+    <!-- East Access Arm (1 entry, 1 exit, speed 13.89 m/s = 50 km/h) -->
+    <edge id="entry_E" from="E_far" to="E" numLanes="1" speed="13.89"/>
+    <edge id="exit_E" from="E" to="E_far" numLanes="1" speed="13.89"/>
+
+    <!-- North Access Arm (1 entry, 1 exit, speed 13.89 m/s = 50 km/h) -->
+    <edge id="entry_N" from="N_far" to="N" numLanes="1" speed="13.89"/>
+    <edge id="exit_N" from="N" to="N_far" numLanes="1" speed="13.89"/>
+
+    <!-- West Access Arm (1 entry, 1 exit, speed 13.89 m/s = 50 km/h) -->
+    <edge id="entry_W" from="W_far" to="W" numLanes="1" speed="13.89"/>
+    <edge id="exit_W" from="W" to="W_far" numLanes="1" speed="13.89"/>
+</edges>

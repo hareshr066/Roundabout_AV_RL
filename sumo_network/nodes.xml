@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <!-- Roundabout Central Circle Nodes -->
+    <node id="N" x="0" y="20" type="priority"/>
+    <node id="E" x="20" y="0" type="priority"/>
+    <node id="S" x="0" y="-20" type="priority"/>
+    <node id="W" x="-20" y="0" type="priority"/>
+    
+    <!-- Far-end boundary nodes (origins/destinations) -->
+    <node id="N_far" x="0" y="100" type="priority"/>
+    <node id="E_far" x="100" y="0" type="priority"/>
+    <node id="S_far" x="0" y="-100" type="priority"/>
+    <node id="W_far" x="-100" y="0" type="priority"/>
+</nodes>
