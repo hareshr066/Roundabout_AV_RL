@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
-    <!-- ================================================================
-         REALISTIC URBAN ROUNDABOUT — NODE GEOMETRY
-         Based on FHWA / UK Design Manual for Roads and Bridges standards:
-           - Inscribed Circle Diameter: 60 m  (radius = 30 m)
-           - This gives a realistic single-lane urban roundabout.
-           - Entry arm length: 170 m (N_far at ±200, ring node at ±30)
-         ================================================================ -->
-
-    <!-- Roundabout Central Circle Nodes (30 m radius) -->
+    <!-- Roundabout ring junction nodes (30 m radius, 60 m inscribed circle) -->
     <node id="N" x="0"    y="30"   type="priority"/>
     <node id="E" x="30"   y="0"    type="priority"/>
     <node id="S" x="0"    y="-30"  type="priority"/>
     <node id="W" x="-30"  y="0"    type="priority"/>
 
-    <!-- Far-end boundary nodes — entry/exit arms of ~170 m -->
+    <!-- Far boundary nodes: entry/exit arms of approx 170 m each -->
     <node id="N_far" x="0"    y="200"   type="priority"/>
     <node id="E_far" x="200"  y="0"     type="priority"/>
     <node id="S_far" x="0"    y="-200"  type="priority"/>

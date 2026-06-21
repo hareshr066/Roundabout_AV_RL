@@ -93,6 +93,18 @@ class RoundaboutMetricsCallback(BaseCallback):
                 self.logger.record("reward_components/timeout_penalty", info.get("episode_timeout_penalty", 0.0))
                 self.logger.record("reward_components/success_reward", info.get("episode_success_reward", 0.0))
                 self.logger.record("reward_components/collision_penalty", info.get("episode_collision_penalty", 0.0))
+                self.logger.record("reward_components/merge_reward", info.get("merge_reward", 0.0))
+                self.logger.record("reward_components/safe_merge_bonus", info.get("safe_merge_bonus", 0.0))
+                self.logger.record("reward_components/unsafe_gap_penalty", info.get("unsafe_gap_penalty", 0.0))
+                self.logger.record("reward_components/entry_delay_penalty", info.get("entry_delay_penalty", 0.0))
+                self.logger.record("reward_components/waiting_penalty", info.get("waiting_penalty", 0.0))
+                self.logger.record("reward_components/successful_exit_bonus", info.get("successful_exit_bonus", 0.0))
+                self.logger.record("reward_components/efficient_merge_bonus", info.get("efficient_merge_bonus", 0.0))
+                
+                # Log TTC & Timing statistics
+                self.logger.record("episode/avg_ttc", info.get("avg_ttc", 999.0))
+                self.logger.record("episode/min_ttc", info.get("min_ttc", 999.0))
+                self.logger.record("episode/time_to_merge", info.get("time_to_merge", 0.0))
 
                 if stage != -1:
                     self.logger.record("episode/curriculum_stage", stage)

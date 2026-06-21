@@ -1,58 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ================================================================
+     TRAFFIC PRESET: MEDIUM  —  ~200 vehicles/hr/arm
+     Represents normal urban peak-hour traffic.
+     Good for: standard PPO evaluation, research experiments.
+     ================================================================ -->
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
 
-    <!-- HDV: Krauss model with realistic human-driver parameters -->
     <vType id="passenger_car"
            carFollowModel="Krauss"
-           length="4.8"
-           minGap="2.5"
-           maxSpeed="13.89"
-           accel="2.6"
-           decel="4.5"
-           emergencyDecel="9.0"
-           sigma="0.5"
-           tau="1.2"
-           speedDev="0.1"
-           lcStrategic="1.5"
-           lcAssertive="0.8"
-           lcPushy="0.7"
-           lcKeepRight="0.5"
-           guiShape="passenger"
-           color="0.12,0.56,1.0"/>
+           length="4.8" minGap="2.5" maxSpeed="13.89"
+           accel="2.6" decel="4.5" emergencyDecel="9.0"
+           sigma="0.5" tau="1.2" speedDev="0.1"
+           lcStrategic="1.5" lcAssertive="0.8" lcPushy="0.7"
+           guiShape="passenger" color="0.12,0.56,1.0"/>
 
-    <!-- AV: IDM model, deterministic, no imperfection -->
     <vType id="av_car"
            carFollowModel="IDM"
-           length="4.8"
-           minGap="2.0"
-           maxSpeed="13.89"
-           accel="2.5"
-           decel="4.0"
-           emergencyDecel="9.0"
-           sigma="0"
-           tau="0.7"
-           speedDev="0.0"
-           lcStrategic="1.0"
-           lcAssertive="0.5"
-           guiShape="passenger/sedan"
-           color="0,0.78,0"/>
+           length="4.8" minGap="2.0" maxSpeed="13.89"
+           accel="2.5" decel="4.0" emergencyDecel="9.0"
+           sigma="0" tau="0.7" speedDev="0.0"
+           lcStrategic="1.0" lcAssertive="0.5"
+           guiShape="passenger/sedan" color="0,0.78,0"/>
 
-    <!-- EGO: PPO agent - Bright Red, overridden via TraCI at spawn -->
     <vType id="ego_av"
            carFollowModel="IDM"
-           length="4.8"
-           minGap="2.0"
-           maxSpeed="13.89"
-           accel="2.5"
-           decel="4.0"
-           emergencyDecel="9.0"
-           sigma="0"
-           tau="0.7"
-           speedDev="0.0"
-           guiShape="passenger/sedan"
-           color="1,0,0"/>
+           length="4.8" minGap="2.0" maxSpeed="13.89"
+           accel="2.5" decel="4.0" emergencyDecel="9.0"
+           sigma="0" tau="0.7" speedDev="0.0"
+           guiShape="passenger/sedan" color="1,0,0"/>
 
-    <!-- Route definitions -->
     <route id="r_N_E" edges="entry_N circ_N_W circ_W_S circ_S_E exit_E"/>
     <route id="r_N_S" edges="entry_N circ_N_W circ_W_S exit_S"/>
     <route id="r_W_S" edges="entry_W circ_W_S exit_S"/>
@@ -62,7 +38,7 @@
     <route id="r_S_N" edges="entry_S circ_S_E circ_E_N exit_N"/>
     <route id="r_S_W" edges="entry_S circ_S_E exit_E"/>
 
-    <!-- Traffic flows: MEDIUM preset (200 veh/hr primary arms) -->
+    <!-- MEDIUM preset: 200 veh/hr primary, 150 cross-flow -->
     <flow id="flow_N_E" type="passenger_car" route="r_N_E" begin="0" end="3600" vehsPerHour="200" departLane="free" departSpeed="max"/>
     <flow id="flow_N_S" type="passenger_car" route="r_N_S" begin="0" end="3600" vehsPerHour="200" departLane="free" departSpeed="max"/>
     <flow id="flow_W_S" type="passenger_car" route="r_W_S" begin="0" end="3600" vehsPerHour="200" departLane="free" departSpeed="max"/>

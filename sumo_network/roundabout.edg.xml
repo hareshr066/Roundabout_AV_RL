@@ -1,34 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
-    <!-- ================================================================
-         REALISTIC URBAN ROUNDABOUT -- EDGE GEOMETRY
-         Ring radius = 30 m.
-         Quadrant midpoint at 45 deg: 30 * cos(45) = 21.21 m
-         Ring speed: 8.33 m/s = 30 km/h (standard urban roundabout)
-         Arm speed:  13.89 m/s = 50 km/h
-         Lane width: 4.0 m (set via netconvert --default.lanewidth=4.0)
-         ================================================================ -->
-
-    <!-- Circular Ring (1 lane, 30 km/h, smooth curvature) -->
-    <!-- Shape: start,mid,end -- single-space separated x,y pairs -->
+    <!-- Circular Ring: 1 lane, 30 km/h (8.33 m/s), 4.0 m wide -->
+    <!-- Shape midpoints at 45-deg on 30m radius: 30*cos(45)=21.21 m -->
     <edge id="circ_S_E" from="S" to="E" numLanes="1" speed="8.33" shape="0,-30 21.21,-21.21 30,0"/>
     <edge id="circ_E_N" from="E" to="N" numLanes="1" speed="8.33" shape="30,0 21.21,21.21 0,30"/>
     <edge id="circ_N_W" from="N" to="W" numLanes="1" speed="8.33" shape="0,30 -21.21,21.21 -30,0"/>
     <edge id="circ_W_S" from="W" to="S" numLanes="1" speed="8.33" shape="-30,0 -21.21,-21.21 0,-30"/>
 
-    <!-- South Access Arm (~170 m, 50 km/h) -->
+    <!-- South Arm (~170 m, 50 km/h) -->
     <edge id="entry_S" from="S_far" to="S" numLanes="1" speed="13.89"/>
     <edge id="exit_S"  from="S" to="S_far" numLanes="1" speed="13.89"/>
 
-    <!-- East Access Arm (~170 m, 50 km/h) -->
+    <!-- East Arm (~170 m, 50 km/h) -->
     <edge id="entry_E" from="E_far" to="E" numLanes="1" speed="13.89"/>
     <edge id="exit_E"  from="E" to="E_far" numLanes="1" speed="13.89"/>
 
-    <!-- North Access Arm (~170 m, 50 km/h) -->
+    <!-- North Arm (~170 m, 50 km/h) -->
     <edge id="entry_N" from="N_far" to="N" numLanes="1" speed="13.89"/>
     <edge id="exit_N"  from="N" to="N_far" numLanes="1" speed="13.89"/>
 
-    <!-- West Access Arm (~170 m, 50 km/h) -->
+    <!-- West Arm (~170 m, 50 km/h) -->
     <edge id="entry_W" from="W_far" to="W" numLanes="1" speed="13.89"/>
     <edge id="exit_W"  from="W" to="W_far" numLanes="1" speed="13.89"/>
 </edges>
