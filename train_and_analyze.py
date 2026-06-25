@@ -12,16 +12,24 @@ from env.roundabout_env import RoundaboutEnv
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 model_path = "results/models/agent_spatial_curriculum_30k.zip"
-artifact_dir = r"C:\Users\KALAIVANI J\.gemini\antigravity-ide\brain\73f5c967-442d-4d47-9a5a-2c30b678ef80"
+# Dynamically locate artifacts directory for the active session, fallback to 'results'
+user_home = os.path.expanduser("~")
+session_id = "61e36dae-73de-4984-b9a9-fad64920a0e0"
+gemini_artifact_path = os.path.join(user_home, ".gemini", "antigravity", "brain", session_id, "artifacts")
+if os.path.exists(os.path.join(user_home, ".gemini", "antigravity")):
+    artifact_dir = gemini_artifact_path
+else:
+    artifact_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 report_path = os.path.join(artifact_dir, "collision_location_analysis.md")
 
 def train():
-    print("Training Spatial Curriculum PPO for 30,000 steps...")
+    print("Training Spatial Curriculum PPO for 50,000 steps...")
     env = RoundaboutEnv(
         fixed_hdv_ratio=0.50,
         use_spatial_curriculum=True,
         spatial_target_success_rate=0.80,
         spatial_window_size=50,
+        max_steps=800,
         gui=False,
         label="train_30k"
     )
@@ -40,15 +48,15 @@ def train():
         clip_range=0.2,
         ent_coef=0.01,
         verbose=1,
-        device="cuda"
+        device="auto"
     )
     
-    model.learn(total_timesteps=30000)
+    model.learn(total_timesteps=50000)
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     model.save(model_path)
     env.close()
     print("Training finished and model saved.")
-
+ 
 def get_colliding_vehicle_details(env, ego_id):
     try:
         colliding_vehs = env.sim.conn.simulation.getCollidingVehiclesIDList()
@@ -82,16 +90,17 @@ def get_colliding_vehicle_details(env, ego_id):
         pass
         
     return "unknown", 0.0
-
+ 
 def run_evaluation(num_episodes=100):
     print(f"Loading model from {model_path}...")
     model = PPO.load(model_path)
     
-    print(f"Initializing standard 80m spawn evaluation environment...")
+    print(f"Initializing standard full entry length spawn evaluation environment...")
     env = RoundaboutEnv(
         fixed_hdv_ratio=0.50,
         use_spatial_curriculum=False,
-        fixed_spawn_distance=80.0,
+        fixed_spawn_distance=None,
+        max_steps=800,
         gui=False,
         label="eval_30k"
     )
@@ -107,6 +116,7 @@ def run_evaluation(num_episodes=100):
     valid_avg_ttcs = []
     entry_delays = []
     times_to_merge = []
+    episode_lengths = []
     
     print(f"Running {num_episodes} evaluation episodes...")
     for ep in range(num_episodes):
@@ -159,6 +169,7 @@ def run_evaluation(num_episodes=100):
             
         reason = step_info.get("termination_reason", "timeout")
         total_merge_attempts += merge_attempts_this_ep
+        episode_lengths.append(step_idx)
         
         entered_circulating_list.append(entered_circulating_this_ep)
         episode_collisions.append(reason == "collision")
@@ -255,6 +266,7 @@ def run_evaluation(num_episodes=100):
     overall_avg_ttc = np.mean(valid_avg_ttcs) if valid_avg_ttcs else 999.0
     avg_entry_delay = np.mean(entry_delays) if entry_delays else 0.0
     avg_time_to_merge = np.mean(times_to_merge) if times_to_merge else 0.0
+    avg_ep_length = np.mean(episode_lengths) if episode_lengths else 0.0
     
     print(f"\nEvaluation Results over {num_episodes} episodes:")
     print(f"  Success Rate:        {success_rate:.1f}%")
@@ -264,6 +276,7 @@ def run_evaluation(num_episodes=100):
     print(f"  Average TTC:         {overall_avg_ttc:.2f} s")
     print(f"  Average Entry Delay: {avg_entry_delay:.2f} s")
     print(f"  Average Time to Merge: {avg_time_to_merge:.2f} s")
+    print(f"  Average Episode Length: {avg_ep_length:.1f} steps")
     
     # Classifications
     categories = [
@@ -373,7 +386,7 @@ def generate_report_artifact(success_rate, collision_rate, timeout_rate, merge_s
     
     report_content = f"""# Collision Location Analysis Report
 
-This report analyzes the collision characteristics of the **Spatial Curriculum PPO agent** across 100 evaluation episodes. The evaluation was run on a standard 80 m spawn distance scenario with 50% Human-Driven Vehicles (HDVs) traffic mix.
+This report analyzes the collision characteristics of the **Spatial Curriculum PPO agent** across 100 evaluation episodes. The evaluation was run on a standard full entry length spawn distance scenario with 50% Human-Driven Vehicles (HDVs) traffic mix.
 
 ---
 

@@ -1,35 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ================================================================
-     TRAFFIC PRESET: VERY_HIGH  —  ~500 vehicles/hr/arm
-     Represents near-capacity / congested roundabout.
-     Good for: penetration study, worst-case paper figures.
-     NOTE: At this density, HDV sigma and aggressiveness will cause
-     visible queuing on approach arms — this is realistic and expected.
-     ================================================================ -->
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
 
+    <!-- HDV: Krauss model with human-driver parameters -->
     <vType id="passenger_car"
            carFollowModel="Krauss"
            length="4.8" minGap="2.5" maxSpeed="13.89"
-           accel="2.6" decel="4.5" emergencyDecel="9.0"
-           sigma="0.5" tau="1.2" speedDev="0.1"
+           accel="2.2" decel="4.0" emergencyDecel="9.0"
+           sigma="0.7" tau="1.4" speedDev="0.15"
            lcStrategic="1.5" lcAssertive="0.8" lcPushy="0.7"
            guiShape="passenger" color="0.12,0.56,1.0"/>
 
+    <!-- AV: IDM model, deterministic, tight platoon spacing -->
     <vType id="av_car"
            carFollowModel="IDM"
-           length="4.8" minGap="2.0" maxSpeed="13.89"
-           accel="2.5" decel="4.0" emergencyDecel="9.0"
-           sigma="0" tau="0.7" speedDev="0.0"
-           lcStrategic="1.0" lcAssertive="0.5"
-           guiShape="passenger/sedan" color="0,0.78,0"/>
+           length="4.8" minGap="1.5" maxSpeed="13.89"
+           accel="3.0" decel="4.5" emergencyDecel="9.0"
+           sigma="0.0" tau="0.6" speedDev="0.0"
+           guiShape="passenger/sedan" color="0.0,0.78,0.36"/>
 
+    <!-- EGO AV: PPO agent - Red -->
     <vType id="ego_av"
            carFollowModel="IDM"
-           length="4.8" minGap="2.0" maxSpeed="13.89"
-           accel="2.5" decel="4.0" emergencyDecel="9.0"
-           sigma="0" tau="0.7" speedDev="0.0"
-           guiShape="passenger/sedan" color="1,0,0"/>
+           length="4.8" minGap="1.5" maxSpeed="13.89"
+           accel="3.0" decel="4.5" emergencyDecel="9.0"
+           sigma="0.0" tau="0.6" speedDev="0.0"
+           guiShape="passenger/sedan" color="1.0,0.0,0.0"/>
 
     <route id="r_N_E" edges="entry_N circ_N_W circ_W_S circ_S_E exit_E"/>
     <route id="r_N_S" edges="entry_N circ_N_W circ_W_S exit_S"/>
@@ -40,14 +35,14 @@
     <route id="r_S_N" edges="entry_S circ_S_E circ_E_N exit_N"/>
     <route id="r_S_W" edges="entry_S circ_S_E exit_E"/>
 
-    <!-- VERY_HIGH preset: 500 veh/hr primary, 380 cross-flow -->
-    <flow id="flow_N_E" type="passenger_car" route="r_N_E" begin="0" end="3600" vehsPerHour="500" departLane="free" departSpeed="max"/>
-    <flow id="flow_N_S" type="passenger_car" route="r_N_S" begin="0" end="3600" vehsPerHour="500" departLane="free" departSpeed="max"/>
-    <flow id="flow_W_S" type="passenger_car" route="r_W_S" begin="0" end="3600" vehsPerHour="500" departLane="free" departSpeed="max"/>
-    <flow id="flow_E_N" type="passenger_car" route="r_E_N" begin="0" end="3600" vehsPerHour="500" departLane="free" departSpeed="max"/>
-    <flow id="flow_W_N" type="passenger_car" route="r_W_N" begin="0" end="3600" vehsPerHour="380" departLane="free" departSpeed="max"/>
-    <flow id="flow_E_S" type="passenger_car" route="r_E_S" begin="0" end="3600" vehsPerHour="380" departLane="free" departSpeed="max"/>
-    <flow id="flow_S_N" type="passenger_car" route="r_S_N" begin="0" end="3600" vehsPerHour="300" departLane="free" departSpeed="max"/>
-    <flow id="flow_S_W" type="passenger_car" route="r_S_W" begin="0" end="3600" vehsPerHour="250" departLane="free" departSpeed="max"/>
+    <!-- VERY_HIGH preset scaled flow rates -->
+    <flow id="flow_N_E" type="passenger_car" route="r_N_E" begin="0" end="3600" vehsPerHour="1100" departLane="free" departSpeed="max"/>
+    <flow id="flow_N_S" type="passenger_car" route="r_N_S" begin="0" end="3600" vehsPerHour="1100" departLane="free" departSpeed="max"/>
+    <flow id="flow_W_S" type="passenger_car" route="r_W_S" begin="0" end="3600" vehsPerHour="1100" departLane="free" departSpeed="max"/>
+    <flow id="flow_E_N" type="passenger_car" route="r_E_N" begin="0" end="3600" vehsPerHour="1100" departLane="free" departSpeed="max"/>
+    <flow id="flow_W_N" type="passenger_car" route="r_W_N" begin="0" end="3600" vehsPerHour="850"  departLane="free" departSpeed="max"/>
+    <flow id="flow_E_S" type="passenger_car" route="r_E_S" begin="0" end="3600" vehsPerHour="850"  departLane="free" departSpeed="max"/>
+    <flow id="flow_S_N" type="passenger_car" route="r_S_N" begin="0" end="3600" vehsPerHour="700"  departLane="free" departSpeed="max"/>
+    <flow id="flow_S_W" type="passenger_car" route="r_S_W" begin="0" end="3600" vehsPerHour="500"  departLane="free" departSpeed="max"/>
 
 </routes>

@@ -15,7 +15,7 @@ def run_diagnostics(model_path, num_episodes=20):
         sys.exit(1)
         
     model = PPO.load(model_path)
-    env = RoundaboutEnv(fixed_hdv_ratio=0.50, gui=False)
+    env = RoundaboutEnv(fixed_hdv_ratio=0.50, gui=False, max_steps=800)
     
     # Aggregated metrics for final report
     entry_time_list = []

@@ -29,7 +29,6 @@ MANIFEST
 # Virtual Environments (Note: do NOT ignore 'env/' as it contains our Gymnasium environment code)
 .venv/
 venv/
-ENV/
 env.bak/
 venv.bak/
 

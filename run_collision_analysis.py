@@ -8,7 +8,14 @@ from env.roundabout_env import RoundaboutEnv
 # Ensure root workspace is in sys.path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-artifact_dir = r"C:\Users\KALAIVANI J\.gemini\antigravity-ide\brain\73f5c967-442d-4d47-9a5a-2c30b678ef80"
+# Dynamically locate artifacts directory for the active session, fallback to 'results'
+user_home = os.path.expanduser("~")
+session_id = "61e36dae-73de-4984-b9a9-fad64920a0e0"
+gemini_artifact_path = os.path.join(user_home, ".gemini", "antigravity", "brain", session_id, "artifacts")
+if os.path.exists(os.path.join(user_home, ".gemini", "antigravity")):
+    artifact_dir = gemini_artifact_path
+else:
+    artifact_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 report_path = os.path.join(artifact_dir, "collision_location_analysis.md")
 
 class AggressiveAgent:
@@ -57,7 +64,8 @@ def run_analysis(num_episodes=100):
     env = RoundaboutEnv(
         fixed_hdv_ratio=0.50,
         use_spatial_curriculum=False,
-        fixed_spawn_distance=80.0,
+        fixed_spawn_distance=None,
+        max_steps=800,
         gui=False,
         label="eval_collision_analysis"
     )

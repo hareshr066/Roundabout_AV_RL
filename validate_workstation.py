@@ -166,8 +166,7 @@ def run_validation():
             max_steps=50,
             fixed_hdv_ratio=None,  # triggers CurriculumManager
             target_success_rate=0.80,
-            curriculum_window=5,
-            label="val_env_suite"
+            curriculum_window=5
         )
         
         # Verify Curriculum Initialization
@@ -238,7 +237,7 @@ def run_validation():
         if os.path.exists(model_save_path):
             os.remove(model_save_path)
             
-        train_env = RoundaboutEnv(fixed_hdv_ratio=0.50, gui=False, label="ppo_val_train")
+        train_env = RoundaboutEnv(fixed_hdv_ratio=0.50, gui=False)
         train_env = Monitor(train_env)
         train_vec_env = DummyVecEnv([lambda: train_env])
         
@@ -275,7 +274,7 @@ def run_validation():
         print("  Model reloaded successfully.")
         
         print("  Running evaluation episode (inference check)...")
-        eval_env = RoundaboutEnv(fixed_hdv_ratio=0.50, gui=False, label="ppo_val_eval")
+        eval_env = RoundaboutEnv(fixed_hdv_ratio=0.50, gui=False)
         obs, info = eval_env.reset()
         done = False
         eval_steps = 0

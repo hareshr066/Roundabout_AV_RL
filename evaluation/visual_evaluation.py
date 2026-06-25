@@ -23,25 +23,33 @@ MODEL_NAMES = {
 }
 
 def main():
-    print("=" * 80)
-    print("                 SUMO-GUI VISUAL EVALUATION CONTROLLER")
-    print("=" * 80)
-    print("Select Model to Evaluate:")
-    print("  [A] Baseline PPO")
-    print("      Path: results/models/final_agent_a_fixed_50.zip")
-    print("  [B] Spatial Curriculum PPO")
-    print("      Path: results/models/agent_spatial_curriculum.zip")
-    print("  [C] Latest Reward-Shaped PPO")
-    print("      Path: results/models/agent_spatial_curriculum_30k.zip")
-    print("=" * 80)
+    import argparse
+    parser = argparse.ArgumentParser(description="SUMO-GUI Visual Evaluation")
+    parser.add_argument("-m", "--model", type=str, choices=["A", "B", "C"], help="Model to evaluate (A/B/C)")
+    parser.add_argument("-e", "--episodes", type=int, default=10, help="Number of episodes (default: 10)")
+    parser.add_argument("-d", "--density", type=str, choices=["low", "medium", "high", "very_high", "demo_realistic"], default="medium", help="Traffic density (default: medium)")
+    args, unknown = parser.parse_known_args()
     
-    choice = ""
-    while choice not in ["A", "B", "C"]:
-        try:
-            choice = input("Enter choice (A/B/C): ").strip().upper()
-        except KeyboardInterrupt:
-            print("\nExiting visual evaluation.")
-            sys.exit(0)
+    choice = args.model
+    if not choice:
+        print("=" * 80)
+        print("                 SUMO-GUI VISUAL EVALUATION CONTROLLER")
+        print("=" * 80)
+        print("Select Model to Evaluate:")
+        print("  [A] Baseline PPO")
+        print("      Path: results/models/final_agent_a_fixed_50.zip")
+        print("  [B] Spatial Curriculum PPO")
+        print("      Path: results/models/agent_spatial_curriculum.zip")
+        print("  [C] Latest Reward-Shaped PPO")
+        print("      Path: results/models/agent_spatial_curriculum_30k.zip")
+        print("=" * 80)
+        
+        while choice not in ["A", "B", "C"]:
+            try:
+                choice = input("Enter choice (A/B/C): ").strip().upper()
+            except KeyboardInterrupt:
+                print("\nExiting visual evaluation.")
+                sys.exit(0)
             
     model_path = MODEL_PATHS[choice]
     model_name = MODEL_NAMES[choice]
@@ -65,14 +73,16 @@ def main():
     # Initialize standard evaluation environment with GUI mode enabled
     env = RoundaboutEnv(
         gui=True,
+        max_steps=800,
         use_spatial_curriculum=False,
         fixed_spawn_distance=80.0,
         fixed_hdv_ratio=0.50,
+        traffic_density=args.density,
         label="visual_eval"
     )
     
     episodes_summary = []
-    num_episodes = 10
+    num_episodes = args.episodes
     
     try:
         for ep in range(num_episodes):
@@ -83,8 +93,9 @@ def main():
             
             obs, info = env.reset()
             
-            # Automatically track the ego vehicle in the SUMO-GUI window
+            # Automatically track the ego vehicle in the SUMO-GUI window (after allowing time to render)
             try:
+                time.sleep(1.0)
                 env.sim.conn.gui.trackVehicle("View #0", env.ego_id)
                 env.sim.conn.gui.setZoom("View #0", 150.0)
             except Exception:
@@ -124,8 +135,8 @@ def main():
                 done = terminated or truncated
                 steps += 1
                 
-                # Slow down simulation (approx 0.33x real-time)
-                time.sleep(0.3)
+                # Slow down simulation
+                time.sleep(0.1)
                 
                 # Live Telemetry
                 print(f"[Ep {ep+1:2d}] Step {steps:3d} | Spd: {speed:5.2f}m/s | Dist: {dist_to_entry:6.2f}m | Gap: {gap_size:6.2f}m | Action: {action[0]:+5.2f} | Rew: {reward:+6.2f}")
@@ -139,10 +150,10 @@ def main():
                     attempted_merge_triggered = True
                     print("\033[1;33m>>> [EVENT] Ego vehicle is attempting to merge! <<\033[0m")
                     
-                if step_info.get("success", False) and not entered_circulating_triggered:
+                if step_info.get("merge_success", False) and not entered_circulating_triggered:
                     entered_circulating_triggered = True
-                    time_to_merge_val = step_info.get("time_to_merge", steps * env.dt)
-                    print("\033[1;32m>>> [EVENT] Ego vehicle successfully entered Circulating Lane! <<\033[0m")
+                    time_to_merge_val = steps * env.dt
+                    print("\033[1;32m*** MERGE SUCCESSFUL ***\033[0m")
                     
                 # Unsafe TTC warnings
                 ttc = env._get_ttc_after_merge()

@@ -1,0 +1,1 @@
+# This directory will contain the custom Gymnasium environment logic (observation space, action space, reward functions, wrapper definitions, and TraCI connection helpers)

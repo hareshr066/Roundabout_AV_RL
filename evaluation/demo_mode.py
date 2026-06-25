@@ -111,9 +111,11 @@ PRESETS = {
 # MODEL AUTO-DETECTION
 # ----------------------------------------------------------------------
 def _auto_detect_model():
-    """Find the most recently modified .zip model in results/models/."""
     search_dir = os.path.join(_ROOT, "results", "models")
-    candidates = glob.glob(os.path.join(search_dir, "*.zip"))
+    candidates = [
+        c for c in glob.glob(os.path.join(search_dir, "*.zip"))
+        if "val_test" not in os.path.basename(c) and "ablation" not in os.path.basename(c)
+    ]
     if not candidates:
         return None
     return max(candidates, key=os.path.getmtime)
@@ -243,9 +245,10 @@ def _get_merge_state(env):
 # MAIN DEMO RUNNER
 # ----------------------------------------------------------------------
 def run_demo(model_path, preset_name="MEDIUM", num_episodes=5,
-             speed_factor=0.25, no_pause=False, demo_gui=False):
+             speed_factor=0.25, no_pause=False, demo_gui=False, hdv_ratio=None):
 
     preset = PRESETS[preset_name]
+    active_hdv_ratio = hdv_ratio if hdv_ratio is not None else preset["hdv_ratio"]
 
     # Header
     print("\n" + "=" * 65)
@@ -254,6 +257,7 @@ def run_demo(model_path, preset_name="MEDIUM", num_episodes=5,
     print(f"  Model  : {os.path.basename(model_path)}")
     print(f"  Preset : {clr(preset_name, YELLOW, BOLD)}  --  {preset['description']}")
     print(f"  Flow   : ~{preset['veh_per_hour']} veh/hr/arm")
+    print(f"  HDV Ratio: {active_hdv_ratio * 100:.0f}%")
     print(f"  Speed  : {speed_factor}x real-time")
     print(f"  Episodes: {num_episodes}")
     print(f"")
@@ -289,9 +293,10 @@ def run_demo(model_path, preset_name="MEDIUM", num_episodes=5,
                 config_file=config_file,
                 gui=True,
                 max_steps=800,          # 800 steps = 80s @ dt=0.1s (long arms need more time)
-                fixed_hdv_ratio=preset["hdv_ratio"],
+                fixed_hdv_ratio=active_hdv_ratio,
                 fixed_spawn_distance=80.0,
                 use_spatial_curriculum=False,
+                traffic_density=preset_name.lower(),
                 label=f"demo_ep{ep + 1}"
             )
 
@@ -461,6 +466,8 @@ def _parse_args():
                         help="Disable interactive pauses (for automated recording)")
     parser.add_argument("--demo-gui", action="store_true",
                         help="Use higher zoom (800) for presentation mode")
+    parser.add_argument("--hdv-ratio", type=float, default=None,
+                        help="Override HDV ratio (0.0 to 1.0) dynamically. If not set, preset's default ratio is used.")
     return parser.parse_args()
 
 
@@ -488,6 +495,7 @@ def main():
         speed_factor=speed,
         no_pause=args.no_pause,
         demo_gui=args.demo_gui,
+        hdv_ratio=args.hdv_ratio,
     )
 
 

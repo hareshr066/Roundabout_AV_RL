@@ -10,13 +10,13 @@ class SpatialCurriculumManager:
     Progressively increases the spawn distance from the roundabout entry (15m -> 30m -> 50m -> 80m)
     to allow the agent to learn merging before learning the long-distance approach.
     """
-    def __init__(self, target_success_rate=0.80, window_size=50):
+    def __init__(self, target_success_rate=0.80, window_size=50, max_spawn_distance=80.0):
         # 4 curriculum stages for spawn distance
         self.stages = {
             1: {"spawn_distance": 15.0, "description": "Stage A: Spawn 15 m from roundabout entry"},
             2: {"spawn_distance": 30.0, "description": "Stage B: Spawn 30 m from roundabout entry"},
             3: {"spawn_distance": 50.0, "description": "Stage C: Spawn 50 m from roundabout entry"},
-            4: {"spawn_distance": 80.0, "description": "Stage D: Spawn 80 m from roundabout entry"}
+            4: {"spawn_distance": max_spawn_distance, "description": f"Stage D: Spawn {max_spawn_distance:.1f} m from roundabout entry (Full length)"}
         }
         
         self.current_stage = 1
@@ -33,6 +33,13 @@ class SpatialCurriculumManager:
         self.total_successes = 0
         
         logging.info(f"Initialized Spatial Curriculum Manager. Starting at Stage A (Spawn Distance: 15.0 m).")
+
+    def update_max_spawn_distance(self, max_spawn_distance):
+        """Updates the spawn distance for Stage D dynamically based on the network's actual geometry."""
+        self.stages[4]["spawn_distance"] = float(max_spawn_distance)
+        self.stages[4]["description"] = f"Stage D: Spawn {max_spawn_distance:.1f} m from roundabout entry (Full length)"
+        logging.info(f"Updated Spatial Curriculum Stage D spawn distance to: {max_spawn_distance:.1f} m")
+
 
     @property
     def current_spawn_distance(self):

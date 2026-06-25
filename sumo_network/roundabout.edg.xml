@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
-    <!-- Circular Ring: 1 lane, 30 km/h (8.33 m/s), 4.0 m wide -->
+    <!-- Circular Ring: 1 lane, 30 km/h (8.33 m/s), 4.0 m wide, Priority 3 -->
     <!-- Shape midpoints at 45-deg on 30m radius: 30*cos(45)=21.21 m -->
-    <edge id="circ_S_E" from="S" to="E" numLanes="1" speed="8.33" shape="0,-30 21.21,-21.21 30,0"/>
-    <edge id="circ_E_N" from="E" to="N" numLanes="1" speed="8.33" shape="30,0 21.21,21.21 0,30"/>
-    <edge id="circ_N_W" from="N" to="W" numLanes="1" speed="8.33" shape="0,30 -21.21,21.21 -30,0"/>
-    <edge id="circ_W_S" from="W" to="S" numLanes="1" speed="8.33" shape="-30,0 -21.21,-21.21 0,-30"/>
+    <edge id="circ_S_E" from="S" to="E" numLanes="1" speed="8.33" priority="3" shape="0,-30 21.21,-21.21 30,0"/>
+    <edge id="circ_E_N" from="E" to="N" numLanes="1" speed="8.33" priority="3" shape="30,0 21.21,21.21 0,30"/>
+    <edge id="circ_N_W" from="N" to="W" numLanes="1" speed="8.33" priority="3" shape="0,30 -21.21,21.21 -30,0"/>
+    <edge id="circ_W_S" from="W" to="S" numLanes="1" speed="8.33" priority="3" shape="-30,0 -21.21,-21.21 0,-30"/>
 
     <!-- South Arm (~170 m, 50 km/h) -->
-    <edge id="entry_S" from="S_far" to="S" numLanes="1" speed="13.89"/>
-    <edge id="exit_S"  from="S" to="S_far" numLanes="1" speed="13.89"/>
+    <edge id="entry_S" from="S_far" to="S" numLanes="1" speed="13.89" priority="1"/>
+    <edge id="exit_S"  from="S" to="S_far" numLanes="1" speed="13.89" priority="2"/>
 
     <!-- East Arm (~170 m, 50 km/h) -->
-    <edge id="entry_E" from="E_far" to="E" numLanes="1" speed="13.89"/>
-    <edge id="exit_E"  from="E" to="E_far" numLanes="1" speed="13.89"/>
+    <edge id="entry_E" from="E_far" to="E" numLanes="1" speed="13.89" priority="1"/>
+    <edge id="exit_E"  from="E" to="E_far" numLanes="1" speed="13.89" priority="2"/>
 
     <!-- North Arm (~170 m, 50 km/h) -->
-    <edge id="entry_N" from="N_far" to="N" numLanes="1" speed="13.89"/>
-    <edge id="exit_N"  from="N" to="N_far" numLanes="1" speed="13.89"/>
+    <edge id="entry_N" from="N_far" to="N" numLanes="1" speed="13.89" priority="1"/>
+    <edge id="exit_N"  from="N" to="N_far" numLanes="1" speed="13.89" priority="2"/>
 
     <!-- West Arm (~170 m, 50 km/h) -->
-    <edge id="entry_W" from="W_far" to="W" numLanes="1" speed="13.89"/>
-    <edge id="exit_W"  from="W" to="W_far" numLanes="1" speed="13.89"/>
+    <edge id="entry_W" from="W_far" to="W" numLanes="1" speed="13.89" priority="1"/>
+    <edge id="exit_W"  from="W" to="W_far" numLanes="1" speed="13.89" priority="2"/>
 </edges>

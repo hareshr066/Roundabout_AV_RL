@@ -1,0 +1,6 @@
+Variant,success_rate,collision_rate,timeout_rate,mean_merge_time,mean_ttc
+1. Baseline PPO,0.0,0.0,100.0,0.0,10.0
+2. + Context-Aware Observations,0.0,0.0,100.0,0.0,10.0
+3. + Spatial Curriculum,0.0,0.0,100.0,0.0,10.0
+4. + Gap-Acceptance Reward Shaping,55.00000000000001,45.0,0.0,12.5,6.877933935783512
+5. Full Method,0.0,0.0,100.0,0.0,10.0
