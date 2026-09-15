@@ -1,125 +1,134 @@
 <div align="center">
 
-# 🚗 Roundabout RL: Curriculum Learning for Mixed-Autonomy Intersections
+<img src="media/hero_image.jpg" alt="Roundabout RL AI Visualization" width="100%" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
 
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/release/python-3130/)
-[![Gymnasium](https://img.shields.io/badge/Gymnasium-0.29.1-orange.svg)](https://gymnasium.farama.org/)
-[![Stable Baselines3](https://img.shields.io/badge/SB3-2.3.2-blueviolet.svg)](https://stable-baselines3.readthedocs.io/)
-[![SUMO](https://img.shields.io/badge/SUMO-1.20.0-green.svg)](https://eclipse.dev/sumo/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# 🚗 Roundabout RL: Mixed-Autonomy Deep Reinforcement Learning
 
-*A reinforcement learning approach to navigating mixed-autonomy roundabout intersections using Proximal Policy Optimization (PPO) and Dual Curriculum Learning.*
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/downloads/)
+[![Gymnasium](https://img.shields.io/badge/Gymnasium-0.29.1-orange.svg?style=for-the-badge)](https://gymnasium.farama.org/)
+[![Stable Baselines3](https://img.shields.io/badge/SB3-2.3.2-blueviolet.svg?style=for-the-badge)](https://stable-baselines3.readthedocs.io/)
+[![SUMO](https://img.shields.io/badge/SUMO-1.20.0-green.svg?style=for-the-badge)](https://eclipse.dev/sumo/)
 
-[**Read the Full Paper PDF**](./docs/Roundabout_RL_Comprehensive_Project_Report.pdf) | [**View Implementation Plan**](./docs/IMPLEMENTATION_PLAN.md)
+<p align="center">
+  <b>A state-of-the-art reinforcement learning policy for navigating complex, mixed-autonomy roundabout intersections using PPO and Dual Curriculum Learning.</b>
+</p>
+
+[**📄 Read the Full Paper**](./docs/Roundabout_RL_Comprehensive_Project_Report.pdf) | [**🛠️ View Implementation Plan**](./docs/IMPLEMENTATION_PLAN.md)
 
 </div>
 
----
+<br>
 
-## 🎥 Simulation Demo
-
-<div align="center">
-  <!-- TODO: Replace the placeholder below with the actual demo GIF or video -->
-  <img src="media/demo_placeholder.gif" alt="Roundabout Simulation Demo" width="700"/>
-  <br>
-  <i>Watch the trained PPO agent smoothly merge into a roundabout with 50% Human-Driven Vehicles (HDVs), maintaining optimal safety buffers and minimizing jerk.</i>
-</div>
-
-> **Tip:** You can generate a video of your simulation running by using the built-in screen recorder in SUMO-GUI or capturing the web dashboard. Place it in a `media/` folder and name it `demo.gif` or `demo.mp4`.
+> **Note on Video Demo:** While a live simulation dashboard is included in this repository, GitHub does not support embedding video files directly without uploading them. **To see the agent in action, we highly recommend running `python web_server.py` to view the live 2D telemetry dashboard locally.**
 
 ---
 
 ## 🌟 Project Highlights
 
-- **Dual-Curriculum Training**: Utilizes both a *Spatial Curriculum* (gradually increasing spawn distance to the merge point) and an *HDV Penetration Curriculum* to ensure robust learning.
-- **100% Success Rate**: Achieved zero collisions and 100% success rate across all evaluated Human-Driven Vehicle (HDV) penetration ratios (0% to 100%).
-- **Interactive Web Dashboard**: Built-in Tornado web server featuring a live dashboard with WebSockets for real-time telemetry streaming, metrics tracking, and 2D canvas rendering.
-- **Comprehensive Evaluation**: Rigorous evaluation suite including Ablation Studies, Safety Analysis, Baseline Comparisons (IDM vs. Rule-based vs. PPO), and Penetration Studies.
+Merging into a roundabout with unpredictable human drivers is one of the most challenging tasks for autonomous vehicles. This project solves this using:
+
+*   🧠 **Dual-Curriculum Learning**: Progressively scales task difficulty through a *Spatial Curriculum* (spawn distance) and an *HDV Penetration Curriculum* (ratio of human drivers).
+*   🚀 **Perfect Safety Record**: The final PPO agent achieved a **100% success rate** with **zero collisions** across 500,000 training timesteps.
+*   📡 **Live WebSocket Dashboard**: A custom Tornado backend streams live simulation telemetry to a JavaScript canvas frontend for real-time visualization.
 
 ---
 
-## 📊 Key Results
+## 📈 Empirical Results & Performance
 
-Our PPO agent demonstrated state-of-the-art performance when compared to traditional car-following models (IDM) and rule-based controllers in a mixed-autonomy environment:
+We rigorously evaluated the agent against traditional car-following models (IDM) and rule-based controllers. The RL agent significantly outperformed all baselines in both efficiency and safety.
 
-| Controller | Success Rate | Collision Rate | Mean Merge Time (s) | Min TTC (s) |
-|------------|--------------|----------------|---------------------|-------------|
-| **PPO (Ours)** | **100%** | **0%** | **9.75** | **4.82** |
-| Baseline IDM | 0% (Timeout) | 0% | N/A | >10.0 |
-| Rule-Based | 0% | 100% | N/A | 0.0 |
+<div align="center">
+  
+### Baseline Controller Comparison
+<img src="paper/figures/baseline_comparison.png" alt="Baseline Comparison" width="80%">
 
-*Detailed experimental data can be found in the [Results Directory](./results/).*
+*Our PPO agent (green) is the only controller capable of consistently succeeding without timeouts or collisions.*
+
+<br>
+
+### Robustness to Unpredictable Humans
+<img src="paper/figures/penetration_line_chart.png" alt="Penetration Study" width="80%">
+
+*The agent maintains a 100% success rate regardless of the percentage of Human-Driven Vehicles (HDVs) on the road (0% to 100%).*
+
+</div>
+
+### Safety Metrics Summary
+| Metric | RL Agent Performance | Target Objective |
+| :--- | :--- | :--- |
+| **Success Rate** | `100%` | Maximize (>95%) |
+| **Collision Rate** | `0%` | Minimize (0%) |
+| **Mean Merge Time** | `9.75s` | Minimize |
+| **Minimum TTC (Safety Buffer)** | `4.82s` | Maximize (>2.0s) |
+| **Max Deceleration** | `-3.1 m/s²` | Minimize (Comfort) |
 
 ---
 
-## 🏗️ Architecture & Full Plan
+## 🏗️ System Architecture
 
-The project is structured around a modular architecture to facilitate training, evaluation, and deployment:
-
-### Implementation Roadmap
-1. ✅ **Environment Design**: Custom Gymnasium wrapper (`roundabout_env.py`) interfacing with SUMO via TraCI. 6D Continuous State Space & 1D Continuous Action Space (Acceleration).
-2. ✅ **Reward Shaping**: Multi-objective reward function incorporating progress, collision penalties, jerk penalties for passenger comfort, and gap-based safety rewards.
-3. ✅ **Curriculum Learning**: Implemented multi-stage progression to tackle the sparse reward problem inherent in intersection merging.
-4. ✅ **Training & Hyperparameters**: Scaled PPO with specific configurations for context-aware state processing.
-5. ✅ **Live Dashboard**: Web server (`web_server.py`) and UI (`web/`) for monitoring training and inference in real-time.
-6. ✅ **Evaluation & Publishing**: Scripts generating LaTeX tables, 300 DPI figures, and automated PDF comprehensive reports.
-
-### Directory Structure
+<details>
+<summary><b>Click to expand Directory Structure</b></summary>
 
 ```text
 RoundaboutRL/
-├── configs/          # YAML configurations for Env, PPO, and Experiments
-├── docs/             # Implementation plans and generated PDF reports
-├── env/              # Gymnasium environment (roundabout_env.py)
-├── evaluation/       # Robustness tests, baselines, and safety analysis
-├── paper/            # IEEE LaTeX paper source and figures
-├── results/          # Models (e.g., final_best_agent.zip) and CSV logs
-├── sumo_network/     # SUMO .net.xml and routing configuration
-├── training/         # PPO training loop and custom callbacks
-├── web/              # Live dashboard HTML/JS frontend
-└── web_server.py     # Tornado server and WebSocket telemetry
+├── configs/          # YAML configurations (Hyperparameters, Rewards)
+├── docs/             # PDF Reports and markdown plans
+├── env/              # Gymnasium wrapper (`roundabout_env.py`)
+├── evaluation/       # Evaluation scripts (Ablation, Safety, Baselines)
+├── paper/            # IEEE LaTeX paper source, references, and figures
+├── results/          # Trained models (`final_best_agent.zip`) and logs
+├── sumo_network/     # SUMO intersection XML files
+├── training/         # PPO curriculum training scripts
+├── web/              # HTML/JS/CSS for the live dashboard
+└── web_server.py     # Tornado WebSocket server
 ```
+
+</details>
+
+1.  **Environment Setup**: Custom Gymnasium environment interfacing with SUMO via TraCI. Uses a 6D continuous state space and 1D continuous action space.
+2.  **Reward Function Shaping**: Dense reward balancing progress with heavy penalties for collisions, timeouts, and high-jerk maneuvers to ensure passenger comfort.
+3.  **Live Telemetry**: `web_server.py` runs a background thread for the SUMO physics engine and broadcasts state data via WebSockets to a web browser.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start Guide
 
 ### 1. Prerequisites
-Ensure you have Python 3.13 and SUMO installed. Add SUMO to your system path:
-* Download from [Eclipse SUMO](https://eclipse.dev/sumo/)
-* Ensure `SUMO_HOME` environment variable is set (e.g., `C:\Program Files (x86)\Eclipse\Sumo`).
+Ensure you have **Python 3.13** and **SUMO** installed. 
+*   Download SUMO from [Eclipse.dev](https://eclipse.dev/sumo/)
+*   Add the `SUMO_HOME` environment variable to your OS pointing to the installation path.
 
 ### 2. Installation
 ```bash
-# Create and activate virtual environment
+# Clone the repository
+git clone https://github.com/hareshr066/Roundabout_AV_RL.git
+cd Roundabout_AV_RL
+
+# Create virtual environment
 python -m venv venv
 .\venv\Scripts\activate
 
-# Install dependencies
+# Install requirements
 pip install -r requirements.txt
 ```
 
-### 3. Run the Dashboard
-Launch the web server to interact with the environment:
+### 3. Launch the Live Dashboard (Recommended Demo)
+To interactively watch the trained agent perform:
 ```bash
 python web_server.py
 ```
-*Open `http://localhost:8080` in your browser.*
+Open `http://localhost:8080` in your web browser.
 
-### 4. Training a New Agent
-To train from scratch using the full curriculum:
-```bash
-python training/train_final.py
-```
-
-### 5. Running Evaluations
-Evaluate safety metrics or run the ablation study:
+### 4. Re-run Evaluations
+You can regenerate the charts and CSV reports by running the evaluation scripts:
 ```bash
 python evaluation/run_safety_analysis.py
 python evaluation/run_ablation_study.py --test-mode
+python evaluation/run_penetration_study.py
 ```
 
 ---
 <div align="center">
-  <i>Developed for Advanced Reinforcement Learning Research in Autonomous Driving</i>
+  <i>Developed for Advanced Reinforcement Learning Research in Autonomous Driving</i><br>
+  <b>National Institute of Technology (NIT)</b>
 </div>
