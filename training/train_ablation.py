@@ -20,7 +20,7 @@ def train_ablation_variants():
     configs = {
         "v1_baseline": {
             "name": "1. Baseline PPO",
-            "total_timesteps": 12288,
+            "total_timesteps": 200000,
             "env_kwargs": {
                 "use_context_aware": False,
                 "use_spatial_curriculum": False,
@@ -32,7 +32,7 @@ def train_ablation_variants():
         },
         "v2_context": {
             "name": "2. + Context-Aware Observations",
-            "total_timesteps": 12288,
+            "total_timesteps": 200000,
             "env_kwargs": {
                 "use_context_aware": True,
                 "use_spatial_curriculum": False,
@@ -44,11 +44,11 @@ def train_ablation_variants():
         },
         "v3_spatial": {
             "name": "3. + Spatial Curriculum",
-            "total_timesteps": 16384,
+            "total_timesteps": 300000,
             "env_kwargs": {
                 "use_context_aware": True,
                 "use_spatial_curriculum": True,
-                "spatial_window_size": 5,
+                "spatial_window_size": 30,
                 "spatial_target_success_rate": 0.70,
                 "use_gap_reward": False,
                 "fixed_hdv_ratio": 0.50,
@@ -57,11 +57,11 @@ def train_ablation_variants():
         },
         "v4_shaping": {
             "name": "4. + Gap-Acceptance Reward Shaping",
-            "total_timesteps": 49152,
+            "total_timesteps": 500000,
             "env_kwargs": {
                 "use_context_aware": True,
                 "use_spatial_curriculum": True,
-                "spatial_window_size": 5,
+                "spatial_window_size": 30,
                 "spatial_target_success_rate": 0.70,
                 "use_gap_reward": True,
                 "fixed_hdv_ratio": 0.50,
@@ -70,16 +70,16 @@ def train_ablation_variants():
         },
         "v5_full": {
             "name": "5. Full Method",
-            "total_timesteps": 49152,
+            "total_timesteps": 500000,
             "env_kwargs": {
                 "use_context_aware": True,
                 "use_spatial_curriculum": True,
-                "spatial_window_size": 5,
+                "spatial_window_size": 30,
                 "spatial_target_success_rate": 0.70,
                 "use_gap_reward": True,
                 "fixed_hdv_ratio": None,  # Enables HDV Curriculum
-                "curriculum_window": 5,
-                "target_success_rate": 0.70,
+                "curriculum_window": 50,
+                "target_success_rate": 0.80,
                 "verbose": False
             }
         }

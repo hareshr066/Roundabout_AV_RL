@@ -12,9 +12,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from env.roundabout_env import RoundaboutEnv
 
-def run_study(test_mode=False):
-    model_path = "results/models/agent_spatial_curriculum_30k.zip"
-    artifact_dir = r"C:\Users\KALAIVANI J\.gemini\antigravity-ide\brain\73f5c967-442d-4d47-9a5a-2c30b678ef80"
+def run_study(test_mode=False, model_path=None):
+    if model_path is None:
+        if os.path.exists("results/models/final_best_agent.zip"):
+            model_path = "results/models/final_best_agent.zip"
+        else:
+            model_path = "results/models/agent_spatial_curriculum_30k.zip"
+    artifact_dir = "results"
     csv_path = "results/study_hdv_penetration.csv"
     
     num_episodes = 2 if test_mode else 100
@@ -177,10 +181,14 @@ def run_study(test_mode=False):
     plt.savefig(plot2_path, dpi=300)
     plt.close()
     
-    # Copy plots to artifacts directory for markdown embedding
-    shutil.copy(plot1_path, os.path.join(artifact_dir, "study_outcome_rates.png"))
-    shutil.copy(plot2_path, os.path.join(artifact_dir, "study_efficiency_safety.png"))
-    print(f"Plots copied to artifacts directory.")
+    # Copy plots to artifacts directory for markdown embedding if different
+    dst1 = os.path.join(artifact_dir, "study_outcome_rates.png")
+    dst2 = os.path.join(artifact_dir, "study_efficiency_safety.png")
+    if os.path.abspath(plot1_path) != os.path.abspath(dst1):
+        shutil.copy(plot1_path, dst1)
+    if os.path.abspath(plot2_path) != os.path.abspath(dst2):
+        shutil.copy(plot2_path, dst2)
+    print(f"Plots saved to results directory.")
     
     # ------------------ STATISTICAL SUMMARY ------------------
     print("\nCompiling statistical summary report...")

@@ -1,0 +1,121 @@
+# Experiment Configuration
+# Defines all experimental parameters for reproducibility
+# ==============================================
+
+# ============================================
+# ABLATION STUDY CONFIGURATION
+# ============================================
+ablation_study:
+  evaluation_episodes: 200     # Episodes per variant evaluation
+  evaluation_max_steps: 200
+  evaluation_hdv_ratio: 0.50
+  evaluation_spawn_distance: 80.0
+
+  variants:
+    v1_baseline:
+      name: "1. Baseline PPO"
+      total_timesteps: 200000
+      use_context_aware: false
+      use_spatial_curriculum: false
+      fixed_spawn_distance: 80.0
+      use_gap_reward: false
+      fixed_hdv_ratio: 0.50
+
+    v2_context:
+      name: "2. + Context-Aware Observations"
+      total_timesteps: 200000
+      use_context_aware: true
+      use_spatial_curriculum: false
+      fixed_spawn_distance: 80.0
+      use_gap_reward: false
+      fixed_hdv_ratio: 0.50
+
+    v3_spatial:
+      name: "3. + Spatial Curriculum"
+      total_timesteps: 300000
+      use_context_aware: true
+      use_spatial_curriculum: true
+      spatial_window_size: 30
+      spatial_target_success_rate: 0.70
+      use_gap_reward: false
+      fixed_hdv_ratio: 0.50
+
+    v4_shaping:
+      name: "4. + Gap-Acceptance Reward Shaping"
+      total_timesteps: 500000
+      use_context_aware: true
+      use_spatial_curriculum: true
+      spatial_window_size: 30
+      spatial_target_success_rate: 0.70
+      use_gap_reward: true
+      fixed_hdv_ratio: 0.50
+
+    v5_full:
+      name: "5. Full Method"
+      total_timesteps: 500000
+      use_context_aware: true
+      use_spatial_curriculum: true
+      spatial_window_size: 30
+      spatial_target_success_rate: 0.70
+      use_gap_reward: true
+      fixed_hdv_ratio: null    # Enables HDV Curriculum
+      curriculum_window: 50
+      target_success_rate: 0.80
+
+# ============================================
+# PENETRATION STUDY CONFIGURATION
+# ============================================
+penetration_study:
+  evaluation_episodes: 200
+  max_steps: 400
+  spawn_distance: 80.0
+  hdv_ratios: [0.0, 0.25, 0.50, 0.75, 1.0]
+  traffic_densities: ["low", "medium", "high"]
+
+# ============================================
+# CURRICULUM CONFIGURATION
+# ============================================
+curriculum:
+  # HDV Penetration Curriculum
+  hdv:
+    target_success_rate: 0.80
+    window_size: 50
+    stages:
+      1: { hdv_ratio: 0.00, description: "0% HDV (All AV)" }
+      2: { hdv_ratio: 0.25, description: "25% HDV" }
+      3: { hdv_ratio: 0.50, description: "50% HDV" }
+      4: { hdv_ratio: 0.75, description: "75% HDV" }
+      5: { hdv_ratio: 1.00, description: "100% HDV (All Human)" }
+
+  # Spatial Curriculum
+  spatial:
+    target_success_rate: 0.80
+    window_size: 30
+    stages:
+      A: { spawn_distance: 15.0, description: "15m from entry" }
+      B: { spawn_distance: 30.0, description: "30m from entry" }
+      C: { spawn_distance: 50.0, description: "50m from entry" }
+      D: { spawn_distance: 80.0, description: "Full length" }
+
+# ============================================
+# SAFETY ANALYSIS CONFIGURATION
+# ============================================
+safety_analysis:
+  evaluation_episodes: 200
+  ttc_critical_threshold: 2.0   # seconds
+  ttc_warning_threshold: 4.0    # seconds
+  max_jerk_threshold: 5.0       # m/s^3
+
+# ============================================
+# BASELINE COMPARISON
+# ============================================
+baseline_comparison:
+  evaluation_episodes: 200
+  baselines:
+    - name: "IDM (SUMO Default)"
+      type: "sumo_default"
+    - name: "Random Policy"
+      type: "random"
+    - name: "Rule-Based Gap Acceptance"
+      type: "rule_based"
+      gap_threshold: 3.0       # seconds

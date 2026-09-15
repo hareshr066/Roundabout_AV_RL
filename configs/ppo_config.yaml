@@ -1,0 +1,45 @@
+# PPO Hyperparameter Configuration
+# For Stable-Baselines3 PPO Algorithm
+# ==============================================
+
+ppo:
+  policy: "MlpPolicy"
+  learning_rate: 3.0e-4
+  n_steps: 2048
+  batch_size: 64
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  verbose: 0
+  device: "auto"  # auto-detect GPU/CPU
+
+  # Neural network architecture
+  policy_kwargs:
+    net_arch:
+      pi: [256, 256]  # Policy network hidden layers
+      vf: [256, 256]  # Value function hidden layers
+    activation_fn: "Tanh"
+
+# Training Schedule
+training:
+  # Default timesteps for different training modes
+  quick_test: 10000       # Quick test run
+  standard: 300000        # Standard training
+  full: 500000            # Full training (recommended)
+  extended: 1000000       # Extended training for best results
+
+  # Checkpointing
+  checkpoint_freq: 50000  # Save checkpoint every N steps
+  eval_freq: 10000        # Evaluate every N steps
+  eval_episodes: 20       # Episodes per evaluation
+
+  # TensorBoard
+  tensorboard_log_dir: "results/logs/tb"
+
+  # Output directories
+  model_save_dir: "results/models"
+  checkpoint_dir: "results/models/checkpoints"

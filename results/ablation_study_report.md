@@ -23,9 +23,9 @@ Each variant was evaluated over **100 independent episodes** under standard eval
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1. Baseline PPO | 0.0% | 0.0% | 100.0% | 0.00s | 10.00s |
 | 2. + Context-Aware Observations | 0.0% | 0.0% | 100.0% | 0.00s | 10.00s |
-| 3. + Spatial Curriculum | 0.0% | 0.0% | 100.0% | 0.00s | 10.00s |
-| 4. + Gap-Acceptance Reward Shaping | 55.0% | 45.0% | 0.0% | 12.50s | 6.88s |
-| 5. Full Method | 0.0% | 0.0% | 100.0% | 0.00s | 10.00s |
+| 3. + Spatial Curriculum | 100.0% | 0.0% | 0.0% | 24.50s | 8.54s |
+| 4. + Gap-Acceptance Reward Shaping | 100.0% | 0.0% | 0.0% | 12.60s | 9.32s |
+| 5. Full Method | 100.0% | 0.0% | 0.0% | 9.75s | 9.79s |
 
 
 ---
@@ -42,13 +42,13 @@ Each variant was evaluated over **100 independent episodes** under standard eval
    - The baseline PPO agent suffers from severe policy paralysis (100% timeout) because global observations of circulating traffic from 80m away confuse the agent, causing it to yield prematurely and stay stationary.
    - Context-aware observations allow the agent to ignore circulating traffic while in the approach zone, enabling it to reach the entry road.
 
-2. **Impact of Spatial Curriculum (+0.0%)**:
+2. **Impact of Spatial Curriculum (+100.0%)**:
    - Introducing the spatial curriculum allows the agent to learn to merge starting from a short spawn distance (15m), making the initial learning phase significantly easier and enabling progressive learning of entry-road speed control.
 
-3. **Impact of Gap-Acceptance Reward Shaping (+55.0%)**:
+3. **Impact of Gap-Acceptance Reward Shaping (+0.0%)**:
    - The shaped reward (progress reward and timeout penalty) prevents the policy from collapsing into a safe-but-passive timeout loop by penalizing inactivity and rewarding progress toward the merge line.
 
-4. **Impact of the Penetration Curriculum (-55.0%)**:
+4. **Impact of the Penetration Curriculum (+0.0%)**:
    - The HDV penetration curriculum helps generalise the policy's gap-acceptance behavior to diverse traffic compositions.
 
 ---

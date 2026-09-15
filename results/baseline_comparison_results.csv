@@ -1,0 +1,5 @@
+policy,success_rate,collision_rate,timeout_rate,avg_merge_time,avg_ttc,avg_reward
+PPO (Ours),1.0,0.0,0.0,21.550000000000004,32.045464669066455,53.00214
+SUMO Default (IDM),0.0,0.0,1.0,0.0,10.0,-499.5
+Random,0.0,0.0,1.0,0.0,10.0,-574.1858
+Rule-Based Gap Acceptance,0.0,1.0,0.0,0.0,18.479728693653577,-219.83942

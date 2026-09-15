@@ -21,8 +21,8 @@ os.makedirs(results_dir, exist_ok=True)
 def evaluate_variant(model_path, env_kwargs, num_episodes=100):
     print(f"Evaluating {model_path} over {num_episodes} episodes...")
     
-    # Initialize environment
-    env = RoundaboutEnv(gui=False, max_steps=200, **env_kwargs)
+    # Initialize environment with max_steps=400 (consistent with standard evaluation)
+    env = RoundaboutEnv(gui=False, max_steps=400, **env_kwargs)
     
     # Load PPO policy
     try:
@@ -107,9 +107,11 @@ def evaluate_variant(model_path, env_kwargs, num_episodes=100):
         "mean_ttc": mean_ttc
     }
 
-def run_ablation_study():
+def run_ablation_study(num_episodes=100):
     model_dir = os.path.join("results", "models")
     
+    v5_model = os.path.join(model_dir, "final_best_agent.zip") if os.path.exists(os.path.join(model_dir, "final_best_agent.zip")) else os.path.join(model_dir, "final_agent_b_curriculum.zip")
+
     variants = {
         "v1_baseline": {
             "name": "1. Baseline PPO",
@@ -157,7 +159,7 @@ def run_ablation_study():
         },
         "v5_full": {
             "name": "5. Full Method",
-            "model_path": os.path.join(model_dir, "final_agent_b_curriculum.zip"),
+            "model_path": v5_model,
             "env_kwargs": {
                 "use_context_aware": True,
                 "use_spatial_curriculum": False,
@@ -179,7 +181,7 @@ def run_ablation_study():
             print(f"Error: Model not found for {var['name']} at {var['model_path']}")
             continue
             
-        metrics = evaluate_variant(var["model_path"], var["env_kwargs"])
+        metrics = evaluate_variant(var["model_path"], var["env_kwargs"], num_episodes=num_episodes)
         if metrics is not None:
             metrics["Variant"] = var["name"]
             results.append(metrics)
@@ -328,14 +330,25 @@ Each component plays a critical role in the learning process, with context-aware
     
     # Write to local file and artifact file
     local_path = os.path.join(results_dir, "ablation_study_report.md")
-    artifact_path = os.path.join(brain_artifact_dir, "ablation_study_report.md")
-    
-    with open(local_path, "w") as f:
-        f.write(report_content)
-    with open(artifact_path, "w") as f:
+    with open(local_path, "w", encoding="utf-8") as f:
         f.write(report_content)
         
-    print(f"Saved reports to {local_path} and {artifact_path}")
+    try:
+        if os.path.exists(brain_artifact_dir):
+            artifact_path = os.path.join(brain_artifact_dir, "ablation_study_report.md")
+            with open(artifact_path, "w", encoding="utf-8") as f:
+                f.write(report_content)
+    except Exception:
+        pass
+        
+    print(f"Saved report to {local_path}")
 
 if __name__ == "__main__":
-    run_ablation_study()
+    import argparse
+    parser = argparse.ArgumentParser(description="Run Ablation Study")
+    parser.add_argument("--episodes", type=int, default=100, help="Episodes per variant")
+    parser.add_argument("--test-mode", action="store_true", help="Run 2 episodes per variant")
+    args = parser.parse_args()
+    
+    eps = 2 if args.test_mode else args.episodes
+    run_ablation_study(num_episodes=eps)

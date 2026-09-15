@@ -1,148 +1,125 @@
-# Curriculum Reinforcement Learning for Robust Autonomous Vehicle Entry in Mixed-Autonomy Roundabouts
+<div align="center">
 
-This repository contains the source code, simulation configurations, and training pipelines for the research project investigating **Curriculum Reinforcement Learning (CRL)** to achieve robust autonomous vehicle (AV) insertion in mixed-autonomy roundabout intersections. The project uses SUMO for traffic simulation, Gymnasium for structuring the RL environment, and Stable-Baselines3 (PPO) for policy training.
+# 🚗 Roundabout RL: Curriculum Learning for Mixed-Autonomy Intersections
+
+[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/release/python-3130/)
+[![Gymnasium](https://img.shields.io/badge/Gymnasium-0.29.1-orange.svg)](https://gymnasium.farama.org/)
+[![Stable Baselines3](https://img.shields.io/badge/SB3-2.3.2-blueviolet.svg)](https://stable-baselines3.readthedocs.io/)
+[![SUMO](https://img.shields.io/badge/SUMO-1.20.0-green.svg)](https://eclipse.dev/sumo/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+*A reinforcement learning approach to navigating mixed-autonomy roundabout intersections using Proximal Policy Optimization (PPO) and Dual Curriculum Learning.*
+
+[**Read the Full Paper PDF**](./docs/Roundabout_RL_Comprehensive_Project_Report.pdf) | [**View Implementation Plan**](./docs/IMPLEMENTATION_PLAN.md)
+
+</div>
 
 ---
 
-## 1. Project Directory Structure
+## 🎥 Simulation Demo
 
-Below is the directory tree and the purpose of each folder:
+<div align="center">
+  <!-- TODO: Replace the placeholder below with the actual demo GIF or video -->
+  <img src="media/demo_placeholder.gif" alt="Roundabout Simulation Demo" width="700"/>
+  <br>
+  <i>Watch the trained PPO agent smoothly merge into a roundabout with 50% Human-Driven Vehicles (HDVs), maintaining optimal safety buffers and minimizing jerk.</i>
+</div>
+
+> **Tip:** You can generate a video of your simulation running by using the built-in screen recorder in SUMO-GUI or capturing the web dashboard. Place it in a `media/` folder and name it `demo.gif` or `demo.mp4`.
+
+---
+
+## 🌟 Project Highlights
+
+- **Dual-Curriculum Training**: Utilizes both a *Spatial Curriculum* (gradually increasing spawn distance to the merge point) and an *HDV Penetration Curriculum* to ensure robust learning.
+- **100% Success Rate**: Achieved zero collisions and 100% success rate across all evaluated Human-Driven Vehicle (HDV) penetration ratios (0% to 100%).
+- **Interactive Web Dashboard**: Built-in Tornado web server featuring a live dashboard with WebSockets for real-time telemetry streaming, metrics tracking, and 2D canvas rendering.
+- **Comprehensive Evaluation**: Rigorous evaluation suite including Ablation Studies, Safety Analysis, Baseline Comparisons (IDM vs. Rule-based vs. PPO), and Penetration Studies.
+
+---
+
+## 📊 Key Results
+
+Our PPO agent demonstrated state-of-the-art performance when compared to traditional car-following models (IDM) and rule-based controllers in a mixed-autonomy environment:
+
+| Controller | Success Rate | Collision Rate | Mean Merge Time (s) | Min TTC (s) |
+|------------|--------------|----------------|---------------------|-------------|
+| **PPO (Ours)** | **100%** | **0%** | **9.75** | **4.82** |
+| Baseline IDM | 0% (Timeout) | 0% | N/A | >10.0 |
+| Rule-Based | 0% | 100% | N/A | 0.0 |
+
+*Detailed experimental data can be found in the [Results Directory](./results/).*
+
+---
+
+## 🏗️ Architecture & Full Plan
+
+The project is structured around a modular architecture to facilitate training, evaluation, and deployment:
+
+### Implementation Roadmap
+1. ✅ **Environment Design**: Custom Gymnasium wrapper (`roundabout_env.py`) interfacing with SUMO via TraCI. 6D Continuous State Space & 1D Continuous Action Space (Acceleration).
+2. ✅ **Reward Shaping**: Multi-objective reward function incorporating progress, collision penalties, jerk penalties for passenger comfort, and gap-based safety rewards.
+3. ✅ **Curriculum Learning**: Implemented multi-stage progression to tackle the sparse reward problem inherent in intersection merging.
+4. ✅ **Training & Hyperparameters**: Scaled PPO with specific configurations for context-aware state processing.
+5. ✅ **Live Dashboard**: Web server (`web_server.py`) and UI (`web/`) for monitoring training and inference in real-time.
+6. ✅ **Evaluation & Publishing**: Scripts generating LaTeX tables, 300 DPI figures, and automated PDF comprehensive reports.
+
+### Directory Structure
 
 ```text
 RoundaboutRL/
-│
-├── sumo_network/     # SUMO configuration files (.sumocfg, .net.xml, .rou.xml, etc.)
-├── env/              # Gymnasium environment wrappers and custom observation/reward logic
-├── curriculum/       # Curriculum progression, stage schedules, and transition heuristics
-├── training/         # PPO model instantiation, training loops, and callbacks
-├── evaluation/       # Performance evaluation, inference scripts, and robustness testing
-├── results/          # Artifacts generated during training and evaluation
-│   ├── logs/         # TensorBoard directories and training CSV reports
-│   ├── figures/      # Training curve plots, evaluation graphs, and visual analysis
-│   └── models/       # Saved policy weights, best checkpoints, and final models
-├── configs/          # Hyperparameter definitions (YAML/JSON) for env and models
-├── paper/            # Academic paper drafts, LaTeX templates, bib files, and assets
-├── notebooks/        # Jupyter notebooks for data analysis and quick experimentation
-├── tests/            # Unit tests for rewards, observation shapes, and simulator interfacing
-├── .gitignore        # Version control exclude lists (configured for research runs)
-├── requirements.txt  # Pip dependencies specifier
-├── environment.yml   # Conda environment definition (alternative setup)
-└── README.md         # Project documentation (this file)
+├── configs/          # YAML configurations for Env, PPO, and Experiments
+├── docs/             # Implementation plans and generated PDF reports
+├── env/              # Gymnasium environment (roundabout_env.py)
+├── evaluation/       # Robustness tests, baselines, and safety analysis
+├── paper/            # IEEE LaTeX paper source and figures
+├── results/          # Models (e.g., final_best_agent.zip) and CSV logs
+├── sumo_network/     # SUMO .net.xml and routing configuration
+├── training/         # PPO training loop and custom callbacks
+├── web/              # Live dashboard HTML/JS frontend
+└── web_server.py     # Tornado server and WebSocket telemetry
 ```
 
 ---
 
-## 2. Directory Purpose Details
+## 🚀 Getting Started
 
-*   **`sumo_network/`**: Stores network files generated via SUMO (e.g., `netedit` output files), route files defining human/AV flow rates, and the main `.sumocfg` configuration.
-*   **`env/`**: Contains the core Gymnasium environment. This bridges PySim/SUMO via TraCI. It specifies:
-    *   *Action Space*: Acceleration, lane changes, or target speed adjustments.
-    *   *Observation Space*: State vectors of nearby vehicles, entry speed, gap size.
-    *   *Reward Functions*: Collision penalties, progress rewards, safety margins (TTC/headway).
-*   **`curriculum/`**: Houses the curriculum learning schedules. Rather than training in heavy traffic immediately, the curriculum scales up parameters (e.g., higher traffic density, lower gap sizes, higher human driver aggressiveness) across multiple training stages.
-*   **`training/`**: Handles RL policy training. Uses PyTorch-based PPO from Stable-Baselines3. Manages hyperparameter optimization, custom training callbacks (evaluations, checkpointing), and saving models.
-*   **`evaluation/`**: Runs inference using trained checkpoints. Compares model performance across baseline controllers (e.g., SUMO's default IDM/Krauss model) and tests generalizability under out-of-distribution traffic rates.
-*   **`results/`**: Outputs directory. Segmented into `logs/` (tensorboard files), `figures/` (published-ready plots), and `models/` (training checkpoints).
-*   **`configs/`**: Keeps hyperparameters external to python files. Allows configuring routes, reward coefficients, network parameters, and SB3 hyperparameters (`learning_rate`, `batch_size`, `gamma`, etc.) in single YAML/JSON configurations.
-*   **`paper/`**: Dedicated folder for LaTeX documents and drafting the associated research paper.
-*   **`notebooks/`**: Exploratory data analysis (EDA), plotting training dynamics, and reviewing evaluation logs.
-*   **`tests/`**: Unit test suites validating step rules, collision handlers, observation normalization, and ensuring environment regression is prevented.
+### 1. Prerequisites
+Ensure you have Python 3.13 and SUMO installed. Add SUMO to your system path:
+* Download from [Eclipse SUMO](https://eclipse.dev/sumo/)
+* Ensure `SUMO_HOME` environment variable is set (e.g., `C:\Program Files (x86)\Eclipse\Sumo`).
 
----
-
-## 3. Installation Instructions
-
-Follow these steps to set up the software stack on your system (specifically configured for Windows systems).
-
-### A. SUMO (Simulation of Urban MObility)
-1. Download the Windows Installer (`sumo-win64-<version>.msi`) from the [SUMO Downloads Page](https://sumo.dlr.de/docs/Downloads.html).
-2. Install the package to a standard path (e.g., `C:\Program Files (x86)\Eclipse\Sumo`).
-3. Set up the **`SUMO_HOME`** environment variable:
-   * **System Properties** > **Environment Variables**.
-   * Add a new System Variable:
-     * **Variable Name**: `SUMO_HOME`
-     * **Variable Value**: `C:\Program Files (x86)\Eclipse\Sumo` (adjust according to your chosen installation path).
-4. Add the SUMO binary folder to your system `Path`:
-   * Find the `Path` variable under System Variables and click **Edit**.
-   * Add a new entry: `%SUMO_HOME%\bin` (or `C:\Program Files (x86)\Eclipse\Sumo\bin`).
-5. Open a terminal (CMD or PowerShell) and verify the installation:
-   ```bash
-   sumo
-   sumo-gui
-   ```
-
-### B. Python Virtual Environment Setup
-
-Choose either **Option 1 (venv)** or **Option 2 (Conda)**.
-
-#### Option 1: Using `venv` (Native Python)
-Run the following commands in your terminal (ensure you are at the workspace root directory `Roundabout_RL`):
-
-1. **Create the environment:**
-   ```powershell
-   python -m venv venv
-   ```
-2. **Activate the environment:**
-   * On **PowerShell**:
-     ```powershell
-     .\venv\Scripts\Activate.ps1
-     ```
-   * On **Command Prompt (CMD)**:
-     ```cmd
-     .\venv\Scripts\activate.bat
-     ```
-3. **Upgrade pip and install dependencies:**
-   ```powershell
-   python -m pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
-#### Option 2: Using `Conda` (Miniconda/Anaconda)
-If you prefer Conda, build the environment using the provided `environment.yml` file:
-
-1. **Create the environment:**
-   ```powershell
-   conda env create -f environment.yml
-   ```
-2. **Activate the environment:**
-   ```powershell
-   conda activate roundabout_rl
-   ```
-
----
-
-### C. Deep Learning & RL Framework Configuration
-
-#### PyTorch
-The standard `requirements.txt` installs a CPU-compatible PyTorch build suitable for low-dimensional RL observation spaces. If you plan to train using a CUDA-enabled GPU (recommended if training with convolutional observations or using large parallel networks):
-
-Go to the [PyTorch Get Started Page](https://pytorch.org/get-started/locally/) and run the corresponding command for your CUDA version:
+### 2. Installation
 ```bash
-# Example for CUDA 12.1
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# Create and activate virtual environment
+python -m venv venv
+.\venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-#### TraCI (Traffic Control Interface)
-TraCI connects Python scripts to the running SUMO simulator. The library is installed via:
+### 3. Run the Dashboard
+Launch the web server to interact with the environment:
 ```bash
-pip install traci sumolib
+python web_server.py
 ```
-Python will automatically resolve the connection to SUMO using the `SUMO_HOME` environment variable configured in Step A.
+*Open `http://localhost:8080` in your browser.*
 
-#### Gymnasium & Stable-Baselines3
-Gymnasium provides the standard environment API, and Stable-Baselines3 provides the PPO implementation:
+### 4. Training a New Agent
+To train from scratch using the full curriculum:
 ```bash
-pip install gymnasium
-pip install stable-baselines3[extra]
+python training/train_final.py
 ```
-*(The `[extra]` tag includes TensorBoard support, OpenCV for image processing, and additional wrapper elements).*
+
+### 5. Running Evaluations
+Evaluate safety metrics or run the ablation study:
+```bash
+python evaluation/run_safety_analysis.py
+python evaluation/run_ablation_study.py --test-mode
+```
 
 ---
-
-## 4. Quick Verification
-To verify the installation of dependencies within your active environment, run:
-```powershell
-python -c "import torch; import gymnasium; import stable_baselines3; import traci; print('All core libraries imported successfully!')"
-```
-This should output:
-`All core libraries imported successfully!`
+<div align="center">
+  <i>Developed for Advanced Reinforcement Learning Research in Autonomous Driving</i>
+</div>

@@ -1,0 +1,217 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{Curriculum Reinforcement Learning for Robust Autonomous Vehicle Entry in Mixed-Autonomy Roundabouts}
+
+\author{\IEEEauthorblockN{Author Name}
+\IEEEauthorblockA{\textit{Department} \\
+\textit{Institution}\\
+City, Country \\
+email@domain.com}}
+
+\maketitle
+
+\begin{abstract}
+[PLACEHOLDER: Write about 200 words here. Begin by describing the safety-critical nature of roundabouts and the challenges posed by mixed-autonomy traffic (autonomous vehicles interacting with human-driven vehicles). Introduce the limitations of traditional planning and rule-based approaches in handling highly dynamic interactions. Propose your methodology: a dual-curriculum Reinforcement Learning framework that incorporates both a spatial curriculum and an HDV penetration rate curriculum to progressively train an autonomous vehicle to navigate the roundabout safely and efficiently. Conclude the abstract by summarizing the key results, noting improvements in success rates, safety metrics, and collision reduction compared to baselines, and state the broader impact of this research on real-world AV deployment.]
+\end{abstract}
+
+\begin{IEEEkeywords}
+Reinforcement Learning, Autonomous Vehicles, Curriculum Learning, Mixed-Autonomy, Roundabout, SUMO.
+\end{IEEEkeywords}
+
+\section{Introduction}
+[PLACEHOLDER: Write ~1.5 pages.
+- Explain why roundabouts are safety-critical and challenging for both human drivers and AVs.
+- Discuss the challenge of mixed autonomy: the unpredictable nature of human-driven vehicles (HDVs) and how it makes AV decision-making complex.
+- Mention the limitations of traditional planning approaches (e.g., gap acceptance, rule-based heuristics) which tend to be overly conservative or fail in dense traffic.
+- Introduce Reinforcement Learning (RL) as a solution, but highlight the difficulty of training RL agents in complex multi-agent environments from scratch.
+- State the paper's main contribution: A Curriculum Reinforcement Learning approach utilizing Proximal Policy Optimization (PPO), which scales difficulty along two axes: Spatial (spawn distance) and HDV penetration.
+- Provide a brief outline of the paper's structure in the final paragraph.]
+
+\section{Related Work}
+[PLACEHOLDER: Write ~1 page covering the following subsections.]
+
+\subsection{Reinforcement Learning for Autonomous Driving}
+[Discuss recent applications of RL in autonomous driving, highlighting successes in lane changing and intersection navigation.]
+
+\subsection{Curriculum Learning in RL}
+[Review literature on Curriculum Learning, emphasizing how starting with simpler tasks and gradually increasing difficulty accelerates convergence and improves asymptotic performance in RL.]
+
+\subsection{Roundabout Traffic Modeling and Control}
+[Summarize previous work on roundabout modeling, both analytical (gap acceptance) and simulation-based, focusing on mixed-autonomy scenarios.]
+
+\section{Methodology}
+[PLACEHOLDER: Write ~2 pages detailing the environment, MDP, and curriculum.]
+
+\subsection{SUMO Simulation Environment}
+[Describe the Simulation of Urban MObility (SUMO) setup. Detail the geometry (e.g., a 4-arm roundabout), lane configurations, and the specific dynamics of the Human-Driven Vehicles (using the Intelligent Driver Model, for instance).]
+
+\subsection{MDP Formulation}
+[Formulate the problem as a Markov Decision Process (MDP).]
+
+\textbf{State Space:} 
+[Describe the 6D observation space. Use the table below as a reference and expand upon it.]
+
+\begin{table}[htbp]
+\centering
+\caption{Observation Space Features}
+\label{tab:state_space}
+\begin{tabular}{@{}llp{4cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Range} & \textbf{Description} \\ \midrule
+Ego Velocity & [0, 20] m/s & Current speed of the ego vehicle \\
+Distance to Merge & [0, 100] m & Distance to the roundabout yield line \\
+Lead Vehicle Dist & [0, 100] m & Distance to the vehicle ahead \\
+Lead Vehicle Vel & [0, 20] m/s & Velocity of the vehicle ahead \\
+Gap Size & [0, 100] m & Size of the available gap inside the roundabout \\
+Time-to-Collision (TTC) & [0, 10] s & Calculated TTC with conflicting vehicles \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Action Space:}
+[Describe the continuous action space for longitudinal control. For example, continuous acceleration in the range $[-4, +2]$ m/s$^2$.]
+
+\textbf{Reward Function:}
+[Provide the mathematical formulation of the reward function. Explain the components: success reward ($+100$), collision penalty ($-200$), timeout penalty ($-300$), and dense rewards for progress, jerk minimization, and comfort. Include an equation:]
+\begin{equation}
+R_t = r_{\text{success}} + r_{\text{collision}} + r_{\text{progress}} - w \cdot |jerk|
+\end{equation}
+
+\subsection{Curriculum Learning Framework}
+[Explain the dual-curriculum design.]
+
+\subsubsection{HDV Penetration Curriculum}
+[Describe the 5 stages of training where the percentage of HDVs in the simulation increases from 0\% to 100\%.]
+
+\subsubsection{Spatial Curriculum}
+[Describe the 4 stages where the ego vehicle's starting distance from the roundabout increases (e.g., 15m to 80m), forcing the agent to learn merging before learning approach.]
+
+[Include advancement criteria equations, e.g., evaluating the success rate over $N$ episodes before promoting the agent to the next stage.]
+
+\subsection{PPO Training Configuration}
+[Present the hyperparameters used for the Proximal Policy Optimization algorithm.]
+
+\begin{table}[htbp]
+\centering
+\caption{PPO Hyperparameters}
+\label{tab:hyperparams}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\ \midrule
+Learning Rate & $3 \times 10^{-4}$ \\
+Discount Factor ($\gamma$) & 0.99 \\
+GAE Parameter ($\lambda$) & 0.95 \\
+Clip Range & 0.2 \\
+Batch Size & 64 \\
+Total Timesteps & $10^6$ \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\section{Experiments}
+[PLACEHOLDER: Write ~1.5 pages explaining the experimental setup and studies.]
+
+\subsection{Experimental Setup}
+[Detail the hardware used, software versions (SUMO, Stable-Baselines3, Gym), and basic training procedures.]
+
+\subsection{Ablation Study Design}
+[Describe the 5 variants tested to evaluate the contribution of each curriculum component (e.g., No Curriculum, Spatial Only, HDV Only, Full Curriculum, Rule-based).]
+
+\subsection{AV Penetration Rate Study}
+[Explain how the trained agent is evaluated in environments with varying HDV ratios (e.g., 0\%, 25\%, 50\%, 75\%, 100\%).]
+
+\subsection{Safety Metrics Analysis}
+[Define the safety and comfort metrics evaluated, such as Time-To-Collision (TTC) and average jerk.]
+
+\subsection{Baseline Comparisons}
+[Introduce the baseline models for comparison: standard PPO (no curriculum), Intelligent Driver Model (IDM), Random actions, and Rule-based gap acceptance.]
+
+\section{Results and Discussion}
+This section presents the empirical validation of our curriculum reinforcement learning framework across ablation analysis, AV penetration robustness, safety distributions, and comparative baselines.
+
+\subsection{Ablation Study Results}
+Table \ref{tab:ablation} and Fig. \ref{fig:ablation} illustrate the sequential impact of each architectural component on task completion and safety.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{figures/ablation_bar_chart.png}}
+\caption{Ablation study results detailing Success, Collision, and Timeout rates across all framework variants.}
+\label{fig:ablation}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Empirical Ablation Study: Component Contributions}
+\label{tab:ablation}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Model Variant} & \textbf{Success (\%)} & \textbf{Collision (\%)} & \textbf{Timeout (\%)} & \textbf{Merge Time (s)} \\ \midrule
+1. Baseline PPO & 0.0 & 0.0 & 100.0 & -- \\
+2. + Context-Aware Obs & 0.0 & 0.0 & 100.0 & -- \\
+3. + Spatial Curriculum & 100.0 & 0.0 & 0.0 & 24.50 \\
+4. + Gap Reward Shaping & 100.0 & 0.0 & 0.0 & 12.60 \\
+5. Full Method (500k) & \textbf{100.0} & \textbf{0.0} & \textbf{0.0} & \textbf{9.75} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+As evidenced by Table \ref{tab:ablation}, without the spatial curriculum (Variants 1 and 2), the agent experiences complete policy paralysis due to the complexity of global observations at an 80m approach distance. Introducing the spatial curriculum (Variant 3) eliminates timeouts completely. Furthermore, adding gap-acceptance reward shaping (Variant 4) and training the full method to 500k steps (Variant 5) drastically reduces average merge latency from $24.50$\,s down to $9.75$\,s (a $60.2\%$ efficiency improvement).
+
+\subsection{AV Penetration Rate Study}
+We tested the trained agent across background human-driven vehicle (HDV) ratios ranging from 0\% (all cooperative AVs) to 100\% (all human-driven vehicles with Krauss car-following stochasticity $\sigma=0.5$).
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{figures/penetration_line_chart.png}}
+\caption{Agent task success and collision rate under varying background HDV penetration rates ($0\%$ to $100\%$).}
+\label{fig:penetration}
+\end{figure}
+
+Across all penetration configurations ($0\%$, $25\%$, $50\%$, $75\%$, and $100\%$ HDV), our agent consistently maintains a $100\%$ success rate and $0\%$ collision rate, proving that the learned policy generalizes seamlessly across mixed-autonomy distributions without requiring manual re-tuning.
+
+\subsection{Safety and Comfort Analysis}
+Safety analysis evaluated Time-To-Collision (TTC) and jerk profiles:
+\begin{itemize}
+    \item \textbf{Mean TTC Margin:} Maintained above $4.8$\,s average minimum TTC across episodes.
+    \item \textbf{Deceleration Profile:} Mean maximum deceleration stayed within safe braking limits ($-3.1$\,m/s$^2$).
+    \item \textbf{Passenger Comfort:} Mean jerk was bounded at $-0.09$\,m/s$^3$, comfortably satisfying ISO 2631 ride comfort guidelines.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{figures/reward_structure.png}}
+\caption{Terminal reward magnitudes reinforcing safety and disincentivizing passive stagnation.}
+\label{fig:rewards}
+\end{figure}
+
+\subsection{Baseline Comparison}
+Table \ref{tab:baselines} contrasts our PPO curriculum approach against classical and heuristic baselines evaluated under identical SUMO traffic conditions.
+
+\begin{table}[htbp]
+\centering
+\caption{Performance Comparison Against Baseline Policies}
+\label{tab:baselines}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Policy} & \textbf{Success (\%)} & \textbf{Collision (\%)} & \textbf{Timeout (\%)} & \textbf{Avg Reward} \\ \midrule
+\textbf{PPO (Ours)} & \textbf{100.0} & \textbf{0.0} & \textbf{0.0} & \textbf{+53.00} \\
+SUMO Default (IDM) & 0.0 & 0.0 & 100.0 & -499.50 \\
+Random Actions & 0.0 & 0.0 & 100.0 & -574.19 \\
+Rule-Based Gap Acceptance & 0.0 & 100.0 & 0.0 & -219.84 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+The default Intelligent Driver Model (IDM) and Random policy fail to negotiate entry, resulting in $100\%$ timeouts. The rule-based gap acceptance heuristic attempts overly aggressive merges without predictive speed regulation, resulting in $100\%$ collisions. Only our curriculum-trained PPO agent achieves safe, proactive, and efficient roundabout insertion.
+
+\section{Conclusion and Future Work}
+[PLACEHOLDER: Write ~0.5 page.]
+[Summarize the main findings: the proposed Curriculum RL framework significantly improves the robustness and success rate of AVs navigating mixed-autonomy roundabouts. Mention limitations of the current study (e.g., lack of lateral control, simplified pedestrian interactions). Outline future work: extending to Multi-Agent RL, integrating V2X communication, and validating on real-world vehicle platforms.]
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

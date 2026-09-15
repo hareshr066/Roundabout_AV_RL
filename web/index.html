@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoundaboutRL — Autonomous Vehicle Entry Simulator & Research Hub</title>
+  <meta name="description" content="Real-Time Reinforcement Learning Simulation & Telemetry Dashboard for Autonomous Vehicle Entry in Mixed-Autonomy Roundabouts">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- TOP HEADER -->
+    <header class="top-header">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <div class="radar-pulse"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="brand-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="2" x2="12" y2="8"></line>
+            <line x1="12" y1="16" x2="12" y2="22"></line>
+            <line x1="2" y1="12" x2="8" y2="12"></line>
+            <line x1="16" y1="12" x2="22" y2="12"></line>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="app-title">Roundabout<span>RL</span></h1>
+          <span class="app-subtitle">Curriculum RL for Mixed-Autonomy Intersections</span>
+        </div>
+      </div>
+
+      <!-- SYSTEM STATUS PILLS -->
+      <div class="header-status-group">
+        <div class="status-pill status-sim" id="status-sim-pill">
+          <span class="status-indicator live"></span>
+          <span class="status-label">SUMO TraCI</span>
+          <span class="status-val" id="status-sim-mode">ONLINE</span>
+        </div>
+        <div class="status-pill" id="status-model-pill">
+          <span class="status-icon">🧠</span>
+          <span class="status-label">Active Model:</span>
+          <span class="status-val truncate" id="header-active-model">Loading...</span>
+        </div>
+        <div class="status-pill" id="status-gpu-pill">
+          <span class="status-icon">⚡</span>
+          <span class="status-label">Compute:</span>
+          <span class="status-val" id="header-gpu-status">CUDA GPU</span>
+        </div>
+      </div>
+
+      <!-- HEADER ACTIONS -->
+      <div class="header-actions">
+        <button id="btn-launch-sumo-gui" class="btn btn-secondary btn-glow" title="Open native 3D/2D SUMO-GUI window on desktop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Launch SUMO-GUI
+        </button>
+      </div>
+    </header>
+
+    <!-- NAV TABS -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="tab-simulator" id="tab-btn-simulator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        Live Simulator & Telemetry
+      </button>
+      <button class="nav-tab" data-tab="tab-models" id="tab-btn-models">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        Model Arena & Checkpoints
+      </button>
+      <button class="nav-tab" data-tab="tab-analytics" id="tab-btn-analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        Research Studies & Benchmarks
+      </button>
+      <button class="nav-tab" data-tab="tab-diagnostics" id="tab-btn-diagnostics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+        </svg>
+        System Diagnostics & Audit
+      </button>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+      
+      <!-- ============================================================== -->
+      <!-- TAB 1: LIVE SIMULATOR & TELEMETRY -->
+      <!-- ============================================================== -->
+      <section id="tab-simulator" class="tab-pane active">
+        <div class="sim-dashboard-grid">
+          
+          <!-- LEFT COLUMN: CANVAS VISUALIZER & SIM CONTROLS -->
+          <div class="sim-visualizer-card">
+            <!-- CANVAS HEADER & CONTROLS -->
+            <div class="card-header-flex">
+              <div class="header-title-box">
+                <h2 class="card-title">Roundabout 2D Simulation View</h2>
+                <div class="canvas-legend">
+                  <span class="legend-item"><span class="legend-dot dot-ego"></span> Ego (PPO Agent)</span>
+                  <span class="legend-item"><span class="legend-dot dot-hdv"></span> HDV (Human)</span>
+                  <span class="legend-item"><span class="legend-dot dot-av"></span> Background AV</span>
+                </div>
+              </div>
+              <div class="canvas-tools">
+                <button id="btn-center-ego" class="btn btn-sm btn-icon-only" title="Center on Ego Vehicle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 12h3m12 0h3M12 3v3m0 12v3"></path></svg>
+                </button>
+                <button id="btn-zoom-in" class="btn btn-sm btn-icon-only" title="Zoom In">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+                <button id="btn-zoom-out" class="btn btn-sm btn-icon-only" title="Zoom Out">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+                <button id="btn-zoom-reset" class="btn btn-sm btn-outline" title="Reset View">Reset</button>
+              </div>
+            </div>
+
+            <!-- CANVAS CONTAINER -->
+            <div class="canvas-wrapper" id="canvas-container">
+              <canvas id="simCanvas" width="900" height="600"></canvas>
+              
+              <!-- CANVAS HUD OVERLAY -->
+              <div class="canvas-hud">
+                <div class="hud-badge hud-state" id="hud-merge-state">
+                  <span class="hud-state-text">APPROACH</span>
+                </div>
+                <div class="hud-badge hud-fps" id="hud-fps-counter">
+                  <span>20.0 FPS</span>
+                </div>
+              </div>
+
+              <!-- NOTIFICATION BANNER OVERLAY -->
+              <div class="event-banner-overlay" id="event-banner">
+                <div class="event-banner-content" id="event-banner-text">EVENT TEXT</div>
+              </div>
+            </div>
+
+            <!-- SIMULATION CONTROL BAR -->
+            <div class="sim-controls-bar">
+              <div class="control-actions">
+                <button id="btn-sim-play" class="btn btn-primary btn-control">
+                  <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  <span id="btn-sim-play-text">Start</span>
+                </button>
+                <button id="btn-sim-pause" class="btn btn-secondary btn-control" disabled>
+                  <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                  <span>Pause</span>
+                </button>
+                <button id="btn-sim-restart" class="btn btn-secondary btn-control">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                  <span>Restart Ep</span>
+                </button>
+              </div>
+
+              <div class="control-sliders">
+                <!-- SPEED MULTIPLIER -->
+                <div class="control-item">
+                  <div class="control-label-flex">
+                    <span>Sim Speed:</span>
+                    <span class="control-val" id="val-speed-mult">1.0x</span>
+                  </div>
+                  <input type="range" id="slider-speed-mult" min="0.2" max="3.0" step="0.1" value="1.0" class="custom-slider">
+                </div>
+
+                <!-- HDV PENETRATION SLIDER -->
+                <div class="control-item">
+                  <div class="control-label-flex">
+                    <span>HDV Ratio:</span>
+                    <span class="control-val" id="val-hdv-ratio">60%</span>
+                  </div>
+                  <input type="range" id="slider-hdv-ratio" min="0" max="100" step="5" value="60" class="custom-slider">
+                </div>
+
+                <!-- PRESET SELECTOR -->
+                <div class="control-item preset-select-box">
+                  <label for="select-preset">Traffic Preset:</label>
+                  <select id="select-preset" class="custom-select">
+                    <option value="LOW">LOW (100 v/h)</option>
+                    <option value="MEDIUM" selected>MEDIUM (200 v/h)</option>
+                    <option value="HIGH">HIGH (350 v/h)</option>
+                    <option value="VERY_HIGH">VERY HIGH (500 v/h)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: REAL-TIME TELEMETRY & GAUGES -->
+          <div class="sim-telemetry-column">
+            
+            <!-- COCKPIT METRICS CARD -->
+            <div class="telemetry-card">
+              <h3 class="telemetry-card-title">Ego Vehicle Cockpit</h3>
+              
+              <!-- DUAL GAUGES ROW -->
+              <div class="gauges-row">
+                <!-- SPEEDOMETER -->
+                <div class="gauge-box">
+                  <div class="gauge-dial">
+                    <svg viewBox="0 0 100 60" class="gauge-svg">
+                      <path d="M 15 50 A 35 35 0 0 1 85 50" class="gauge-bg-arc"></path>
+                      <path d="M 15 50 A 35 35 0 0 1 85 50" class="gauge-val-arc speed-arc" id="speed-arc-path"></path>
+                    </svg>
+                    <div class="gauge-center-val">
+                      <span class="gauge-number" id="tele-speed">0.0</span>
+                      <span class="gauge-unit">m/s</span>
+                    </div>
+                  </div>
+                  <div class="gauge-sub" id="tele-speed-kmh">0.0 km/h</div>
+                  <div class="gauge-label">Ego Speed</div>
+                </div>
+
+                <!-- TIME-TO-COLLISION (TTC) GAUGE -->
+                <div class="gauge-box">
+                  <div class="gauge-dial">
+                    <svg viewBox="0 0 100 60" class="gauge-svg">
+                      <path d="M 15 50 A 35 35 0 0 1 85 50" class="gauge-bg-arc"></path>
+                      <path d="M 15 50 A 35 35 0 0 1 85 50" class="gauge-val-arc ttc-arc" id="ttc-arc-path"></path>
+                    </svg>
+                    <div class="gauge-center-val">
+                      <span class="gauge-number safe" id="tele-ttc">inf</span>
+                      <span class="gauge-unit">sec</span>
+                    </div>
+                  </div>
+                  <div class="gauge-sub" id="tele-ttc-status">SAFE GAP</div>
+                  <div class="gauge-label">Time-To-Collision</div>
+                </div>
+              </div>
+
+              <!-- TELEMETRY STATS GRID -->
+              <div class="telemetry-stats-grid">
+                <div class="stat-cell">
+                  <span class="stat-label">Dist to Entry</span>
+                  <span class="stat-value" id="tele-dist-entry">170.0 m</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-label">Circulating Gap</span>
+                  <span class="stat-value" id="tele-gap">50.0 m</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-label">Action Accel</span>
+                  <span class="stat-value" id="tele-accel">+0.00 m/s²</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-label">Step Reward</span>
+                  <span class="stat-value" id="tele-step-reward">+0.00</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-label">Total Reward</span>
+                  <span class="stat-value highlight" id="tele-total-reward">0.00</span>
+                </div>
+                <div class="stat-cell">
+                  <span class="stat-label">Min Episode TTC</span>
+                  <span class="stat-value" id="tele-min-ttc">N/A</span>
+                </div>
+              </div>
+
+              <!-- MERGE PROGRESSION TIMELINE -->
+              <div class="timeline-container">
+                <div class="timeline-label">Navigation Phase:</div>
+                <div class="timeline-steps">
+                  <div class="t-step active" id="step-approach">
+                    <div class="t-dot"></div>
+                    <span>Approach</span>
+                  </div>
+                  <div class="t-line" id="line-1"></div>
+                  <div class="t-step" id="step-merge">
+                    <div class="t-dot"></div>
+                    <span>Merge Zone</span>
+                  </div>
+                  <div class="t-line" id="line-2"></div>
+                  <div class="t-step" id="step-circ">
+                    <div class="t-dot"></div>
+                    <span>Circulating</span>
+                  </div>
+                  <div class="t-line" id="line-3"></div>
+                  <div class="t-step" id="step-exit">
+                    <div class="t-dot"></div>
+                    <span>South Exit</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EPISODE LIVE SUMMARY CARD -->
+            <div class="telemetry-card">
+              <div class="card-header-flex">
+                <h3 class="telemetry-card-title">Recent Episode History</h3>
+                <span class="badge" id="ep-count-badge">Ep #1</span>
+              </div>
+              <div class="history-table-wrapper">
+                <table class="data-table" id="ep-history-table">
+                  <thead>
+                    <tr>
+                      <th>Ep</th>
+                      <th>Outcome</th>
+                      <th>Steps</th>
+                      <th>Merge T</th>
+                      <th>Min TTC</th>
+                      <th>Reward</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ep-history-body">
+                    <tr><td colspan="6" class="text-center text-muted">Awaiting completed episode...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- BOTTOM REAL-TIME CHARTS ROW -->
+        <div class="sim-charts-section">
+          <div class="chart-card">
+            <div class="card-header-flex">
+              <h3 class="chart-title">Real-Time Speed & Acceleration (m/s)</h3>
+              <span class="chart-tag">PPO Action Dynamics</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="speedChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="card-header-flex">
+              <h3 class="chart-title">Safety Metric: TTC & Gap Size (m / s)</h3>
+              <span class="chart-tag">Risk & Proximity</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="safetyChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 2: MODEL ARENA & CHECKPOINTS -->
+      <!-- ============================================================== -->
+      <section id="tab-models" class="tab-pane">
+        <div class="arena-container">
+          <div class="section-hero">
+            <h2 class="section-title">Model Checkpoint Arena</h2>
+            <p class="section-desc">Inspect, switch, and evaluate trained reinforcement learning policies across spatial curriculum, reward-shaping ablations, and baseline models.</p>
+          </div>
+
+          <div class="models-grid" id="models-cards-grid">
+            <!-- Model cards injected by JavaScript -->
+            <div class="loading-spinner">Loading policy checkpoints...</div>
+          </div>
+
+          <!-- COMPARISON BENCHMARK TABLE -->
+          <div class="telemetry-card mt-6">
+            <h3 class="telemetry-card-title">Policy Benchmark Comparison (Standard Evaluation)</h3>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Model Variant</th>
+                    <th>Curriculum Type</th>
+                    <th>Success Rate</th>
+                    <th>Collision Rate</th>
+                    <th>Mean Merge Time</th>
+                    <th>Mean TTC</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="model-benchmark-body">
+                  <tr>
+                    <td><strong>Spatial Curriculum 30k (Recommended)</strong></td>
+                    <td><span class="badge badge-success">4-Stage Spatial + HDV</span></td>
+                    <td class="text-success font-bold">100.0%</td>
+                    <td class="text-success">0.0%</td>
+                    <td>13.38 s</td>
+                    <td>4.17 s</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="window.selectModel('agent_spatial_curriculum_30k.zip')">Activate</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Spatial Curriculum Standard</strong></td>
+                    <td><span class="badge badge-primary">Spatial Staging</span></td>
+                    <td class="text-success">100.0%</td>
+                    <td class="text-success">0.0%</td>
+                    <td>13.42 s</td>
+                    <td>4.21 s</td>
+                    <td><button class="btn btn-sm btn-outline" onclick="window.selectModel('agent_spatial_curriculum.zip')">Activate</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Reward-Shaped Ablation v4</strong></td>
+                    <td><span class="badge badge-warning">Gap Reward Shaping</span></td>
+                    <td class="text-warning">55.0%</td>
+                    <td class="text-danger">45.0%</td>
+                    <td>12.50 s</td>
+                    <td>6.88 s</td>
+                    <td><button class="btn btn-sm btn-outline" onclick="window.selectModel('ablation_v4_shaping.zip')">Activate</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Baseline PPO (Agent A Fixed 50)</strong></td>
+                    <td><span class="badge badge-muted">No Curriculum</span></td>
+                    <td class="text-danger">0.0% (Frozen)</td>
+                    <td class="text-muted">0.0%</td>
+                    <td>N/A (Timeout)</td>
+                    <td>10.00 s</td>
+                    <td><button class="btn btn-sm btn-outline" onclick="window.selectModel('final_agent_a_fixed_50.zip')">Activate</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 3: RESEARCH STUDIES & BENCHMARKS -->
+      <!-- ============================================================== -->
+      <section id="tab-analytics" class="tab-pane">
+        <div class="analytics-container">
+          <div class="section-hero">
+            <h2 class="section-title">Empirical Research Findings & Ablation Studies</h2>
+            <p class="section-desc">Comprehensive analysis of autonomous vehicle insertion dynamics across varying human-driven vehicle (HDV) penetration rates and ablation variants.</p>
+          </div>
+
+          <!-- ANALYTICS CARDS GRID -->
+          <div class="analytics-grid">
+            <div class="analytics-card">
+              <h3 class="card-title">Study 1: HDV Penetration Rate Robustness</h3>
+              <p class="card-subtitle">Safety & Efficiency vs. Mixed Autonomy Traffic Composition</p>
+              <div class="chart-container large">
+                <canvas id="hdvPenetrationChart"></canvas>
+              </div>
+            </div>
+
+            <div class="analytics-card">
+              <h3 class="card-title">Study 2: Architectural Ablation Outcomes</h3>
+              <p class="card-subtitle">Contribution of Spatial Curriculum, Observation Context, and Reward Shaping</p>
+              <div class="chart-container large">
+                <canvas id="ablationChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- RESEARCH FIGURES PREVIEW -->
+          <div class="telemetry-card mt-6">
+            <h3 class="telemetry-card-title">Published Research Figures</h3>
+            <div class="figures-gallery">
+              <div class="figure-item">
+                <img src="/results_media/study_efficiency_safety.png" alt="Efficiency & Safety vs HDV Ratio" class="figure-img">
+                <div class="figure-caption">Figure 1: Mean Insertion Time and Time-To-Collision across HDV Penetration (0% - 100%)</div>
+              </div>
+              <div class="figure-item">
+                <img src="/results_media/ablation_study_chart.png" alt="Ablation Study Chart" class="figure-img">
+                <div class="figure-caption">Figure 2: Comparative Ablation Study Across 5 Methodological Formulations</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- TAB 4: SYSTEM DIAGNOSTICS & AUDIT -->
+      <!-- ============================================================== -->
+      <section id="tab-diagnostics" class="tab-pane">
+        <div class="diagnostics-container">
+          <div class="section-hero">
+            <h2 class="section-title">Research Workstation Diagnostics & System Audit</h2>
+            <p class="section-desc">Hardware acceleration status, SUMO TraCI bridge verification, and reinforcement learning framework configuration.</p>
+          </div>
+
+          <div class="diag-cards-grid">
+            <div class="diag-card">
+              <div class="diag-icon-box success">✓</div>
+              <div class="diag-info">
+                <h4>SUMO Simulator & TraCI</h4>
+                <p id="diag-sumo-status">Eclipse SUMO 1.20+ with TraCI socket connector</p>
+                <code id="diag-sumo-path">C:\Program Files (x86)\Eclipse\Sumo\bin\sumo.EXE</code>
+              </div>
+            </div>
+
+            <div class="diag-card">
+              <div class="diag-icon-box success">✓</div>
+              <div class="diag-info">
+                <h4>PyTorch & CUDA Device</h4>
+                <p id="diag-torch-status">PyTorch 2.12.1 (CUDA Enabled)</p>
+                <code id="diag-gpu-name">NVIDIA GeForce RTX GPU</code>
+              </div>
+            </div>
+
+            <div class="diag-card">
+              <div class="diag-icon-box success">✓</div>
+              <div class="diag-info">
+                <h4>Stable-Baselines3 (PPO)</h4>
+                <p>Proximal Policy Optimization with continuous Box action space</p>
+                <code>SB3 v2.9.0 / Gymnasium 0.29.1</code>
+              </div>
+            </div>
+
+            <div class="diag-card">
+              <div class="diag-icon-box success">✓</div>
+              <div class="diag-info">
+                <h4>SUMO Roundabout Network</h4>
+                <p>4-Arm Mixed-Autonomy Roundabout (170m entry arms, 36.89m ring)</p>
+                <code>sumo_network/roundabout.sumocfg</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- LAUNCH NATIVE SUMO MODAL / PANEL -->
+          <div class="telemetry-card mt-6">
+            <div class="card-header-flex">
+              <h3 class="telemetry-card-title">Launch Native Desktop SUMO-GUI Controller</h3>
+              <span class="badge badge-primary">Direct OS Window</span>
+            </div>
+            <p class="text-muted mb-4">Run the high-resolution presentation demo mode in the native SUMO GUI desktop application with vehicle tracking and step-by-step pauses.</p>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="gui-modal-model">Select Model:</label>
+                <select id="gui-modal-model" class="custom-select">
+                  <option value="agent_spatial_curriculum_30k.zip">Spatial Curriculum 30k (Recommended)</option>
+                  <option value="agent_spatial_curriculum.zip">Spatial Curriculum Standard</option>
+                  <option value="final_agent_a_fixed_50.zip">Baseline Fixed 50%</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="gui-modal-preset">Traffic Density:</label>
+                <select id="gui-modal-preset" class="custom-select">
+                  <option value="LOW">LOW (100 veh/hr)</option>
+                  <option value="MEDIUM" selected>MEDIUM (200 veh/hr)</option>
+                  <option value="HIGH">HIGH (350 veh/hr)</option>
+                  <option value="VERY_HIGH">VERY HIGH (500 veh/hr)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="gui-modal-episodes">Episodes:</label>
+                <input type="number" id="gui-modal-episodes" value="3" min="1" max="20" class="custom-input">
+              </div>
+
+              <div class="form-group">
+                <label for="gui-modal-speed">Slow-Motion:</label>
+                <select id="gui-modal-speed" class="custom-select">
+                  <option value="0.1">0.1x (Ultra Slow-Mo)</option>
+                  <option value="0.25" selected>0.25x (Presentation)</option>
+                  <option value="0.5">0.5x (Normal Speed)</option>
+                  <option value="1.0">1.0x (Real-time)</option>
+                </select>
+              </div>
+
+              <div class="form-group flex-end">
+                <button id="btn-modal-launch-gui" class="btn btn-primary btn-glow">
+                  🚀 Launch Desktop SUMO-GUI
+                </button>
+              </div>
+            </div>
+            <div id="gui-launch-alert" class="launch-alert hidden"></div>
+          </div>
+        </div>
+      </section>
+    <!-- RESULTS GALLERY SECTION -->
+    <section class="section-panel" style="margin-top: 1.5rem;">
+      <div class="section-header">
+        <h2 class="section-title">📊 Research Results Gallery</h2>
+        <span class="section-badge" id="figures-count">Loading...</span>
+      </div>
+      <p style="color: var(--text-muted, #888); font-size: 0.9rem; margin-bottom: 1rem;">
+        Publication-quality figures generated from experimental data. Click any figure to view full size.
+      </p>
+      <div id="figures-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;">
+        <!-- Figures loaded dynamically -->
+      </div>
+    </section>
+
+    </main>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="/static/js/canvas_renderer.js"></script>
+  <script src="/static/js/telemetry_charts.js"></script>
+  <script src="/static/js/app.js"></script>
+
+  <!-- Results Gallery Loader -->
+  <script>
+    (function loadFigures() {
+      fetch('/api/figures')
+        .then(r => r.json())
+        .then(data => {
+          const grid = document.getElementById('figures-grid');
+          const badge = document.getElementById('figures-count');
+          badge.textContent = data.count + ' Figures';
+          if (data.figures.length === 0) {
+            grid.innerHTML = '<p style="color:#888;">No figures generated yet. Run: <code>python evaluation/generate_figures.py</code></p>';
+            return;
+          }
+          grid.innerHTML = data.figures.map(fig => `
+            <div style="background: var(--card-bg, #1a1a2e); border-radius: 12px; overflow: hidden; border: 1px solid var(--border, #333); transition: transform 0.2s;">
+              <a href="${fig.url}" target="_blank" style="display: block;">
+                <img src="${fig.url}" alt="${fig.title}" style="width: 100%; height: auto; display: block;" loading="lazy">
+              </a>
+              <div style="padding: 0.75rem 1rem;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #eee);">${fig.title}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted, #888);">${fig.size_kb} KB</div>
+              </div>
+            </div>
+          `).join('');
+        })
+        .catch(() => {
+          document.getElementById('figures-grid').innerHTML = '<p style="color:#888;">Could not load figures.</p>';
+        });
+    })();
+  </script>
+</body>
+</html>

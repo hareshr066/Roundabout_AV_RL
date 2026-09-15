@@ -1,0 +1,65 @@
+# Environment Configuration
+# For RoundaboutEnv Gymnasium Environment
+# ==============================================
+
+environment:
+  # SUMO Configuration
+  config_file: "sumo_network/roundabout.sumocfg"
+  dt: 0.1             # Control timestep (seconds)
+  max_steps: 800       # Maximum steps per episode
+  warmup_steps: 200    # Warmup steps to populate traffic
+
+  # Ego Vehicle
+  ego_id: "ego"
+  route_id: "r_N_S"   # North entry -> South exit
+  ego_max_speed: 13.89 # m/s (~50 km/h)
+
+  # Action Space
+  action:
+    min_accel: -4.0    # Max braking (m/s^2)
+    max_accel: 2.0     # Max acceleration (m/s^2)
+
+  # Observation Space (6-dimensional)
+  observation:
+    dims: 6
+    features:
+      - name: ego_speed
+        range: [0.0, 15.0]
+        unit: "m/s"
+      - name: distance_to_entry
+        range: [0.0, 250.0]
+        unit: "m"
+      - name: nearest_circ_dist
+        range: [0.0, 100.0]
+        unit: "m"
+      - name: nearest_circ_speed
+        range: [0.0, 15.0]
+        unit: "m/s"
+      - name: gap_size
+        range: [0.0, 100.0]
+        unit: "m"
+      - name: hdv_ratio
+        range: [0.0, 1.0]
+        unit: "ratio"
+
+  # Reward Configuration
+  rewards:
+    success_reward: 100.0
+    collision_penalty: -200.0
+    timeout_penalty: -300.0
+    progress_weight: 0.1
+    jerk_weight: 0.0001
+    comfort_weight: 0.1
+    waiting_penalty: -0.5
+
+  # Zone Definition
+  merge_zone_threshold: 30.0  # meters from entry point
+  ttc_threshold: 2.0          # seconds
+
+# Traffic Density Presets
+traffic_presets:
+  low: "sumo_network/routes_low.xml"
+  medium: "sumo_network/routes.xml"
+  high: "sumo_network/routes_high.xml"
+  very_high: "sumo_network/routes_very_high.xml"
+  demo_realistic: "sumo_network/routes_demo_realistic.xml"
